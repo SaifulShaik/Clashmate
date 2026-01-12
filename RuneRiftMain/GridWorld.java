@@ -12,6 +12,8 @@ public class GridWorld extends World
     public static final int CELLS_WIDE = 8;
     public static final int CELLS_TALL = 8;
     private int gridWidth, gridHeight;
+    private ElixirBar elixirBarWhite;
+    private ElixirBar elixirBarBlack;
 
     private Block[][] blockGrid;
     
@@ -30,8 +32,15 @@ public class GridWorld extends World
         blockGrid = new Block[CELLS_TALL][CELLS_WIDE];
         layoutGrid();
         
+<<<<<<< Updated upstream
         Piece wKnight = new Piece(Piece.PieceType.DARK_PRINCE, blockGrid[0][0], true);
         addObject(wKnight, blockGrid[7][0].getX(), blockGrid[7][0].getY());
+=======
+        elixirBarWhite = new ElixirBar();
+        addObject(elixirBarWhite, 400, 30);
+        elixirBarBlack = new ElixirBar();
+        addObject(elixirBarBlack, 400, 570);
+>>>>>>> Stashed changes
     }
     
     private void layoutGrid() {
