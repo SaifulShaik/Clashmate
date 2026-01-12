@@ -11,7 +11,6 @@ public class LandingPage extends World
 {
     // Labels and Buttons
     private Button playButton;
-    private Button editorButton;
     private Button creditsButton;
     private Label titleLabel;
     private Label subtitleLabel;
@@ -98,10 +97,6 @@ public class LandingPage extends World
         {
             if (playButton.wasClicked())
             {
-                Greenfoot.setWorld(new GridWorld());
-            }
-            else if (editorButton.wasClicked())
-            {
                 Greenfoot.setWorld(new EditorWorld());
             }
             else if (creditsButton.wasClicked())
@@ -129,7 +124,7 @@ public class LandingPage extends World
         createBackground();
         
         // Create title label
-        titleLabel = new Label("RUNERIFT", 80);
+        titleLabel = new Label("CLASHMATE", 80);
         titleLabel.setLineColor(new Color(0, 0, 0, 0));
         titleLabel.setFillColor(new Color(255, 255, 255, titleOpacity));
         addObject(titleLabel, 300, titleY);
@@ -148,18 +143,11 @@ public class LandingPage extends World
         addObject(playButton, 300, 320);
         
         // Create editor button
-        editorButton = new Button("EDITOR", 220, 65,
+        creditsButton = new Button("CREDITS", 220, 65,
                                    new Color(70, 130, 180),
                                    new Color(100, 149, 237),
                                    Color.WHITE, 28);
-        addObject(editorButton, 300, 410);
-        
-        // Create credits button
-        creditsButton = new Button("CREDITS", 220, 55,
-                                   new Color(50, 50, 50),
-                                   new Color(80, 80, 80),
-                                   Color.WHITE, 24);
-        addObject(creditsButton, 300, 500);
+        addObject(creditsButton, 300, 410);
     }
 
     /**
@@ -167,31 +155,19 @@ public class LandingPage extends World
      */
     private void createBackground()
     {
-        GreenfootImage bg = new GreenfootImage(600, 600);
+        // Create a solid color background to fill the frame
+        GreenfootImage bg = new GreenfootImage(getWidth(), getHeight());
+        bg.setColor(new Color(20, 30, 60));
+        bg.fill();
         
-        // Create a gradient from dark blue to darker blue/purple
-        for (int y = 0; y < 600; y++)
-        {
-            float ratio = (float) y / 600;
-            int r = (int) (20 + (40 - 20) * ratio);
-            int g = (int) (30 + (20 - 30) * ratio);
-            int b = (int) (60 + (50 - 60) * ratio);
-            
-            bg.setColor(new Color(r, g, b));
-            bg.fillRect(0, y, 600, 1);
-        }
+        // Load and scale the image smaller
+        GreenfootImage img = new GreenfootImage("Clash_Chess.png");
+        img.scale(300, 300);
         
-        // Add some stars for decoration
-        for (int i = 0; i < 50; i++)
-        {
-            int x = Greenfoot.getRandomNumber(600);
-            int y = Greenfoot.getRandomNumber(600);
-            int size = Greenfoot.getRandomNumber(2) + 1;
-            int brightness = Greenfoot.getRandomNumber(100) + 155;
-            
-            bg.setColor(new Color(brightness, brightness, brightness));
-            bg.fillOval(x, y, size, size);
-        }
+        // Center the image on the background
+        int x = (getWidth() - 300) / 2;
+        int y = (getHeight() - 300) / 2;
+        bg.drawImage(img, x, y);
         
         setBackground(bg);
     }
