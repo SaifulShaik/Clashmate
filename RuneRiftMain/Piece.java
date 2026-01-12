@@ -29,35 +29,23 @@ public class Piece extends Actor
     }
     
     private void setImage(PieceType type, boolean isWhite) {
-        int size = 125;
+        int size = 60;
         switch (type) {
             case PieceType.DARK_PRINCE:
                 if (isWhite) setImage("images/WDarkPrince.png");
-                else {
-                    setImage("images/BDarkPrince.png");
-                    size = 250;
-                }
+                else setImage("images/BDarkPrince.png");
                 break;
             case PieceType.KNIGHT:
                 if (isWhite) setImage("images/WKnight.png");
-                else {
-                    setImage("images/BKnight.png");
-                    size = 70;
-                }
+                else setImage("images/BKnight.png");
                 break;
             case PieceType.MUSKETEER:
                 if (isWhite) setImage("images/WMusketeer.png");
-                else {
-                    setImage("images/BMusketeer.png");
-                    size = 100;
-                }
+                else setImage("images/BMusketeer.png");
                 break;
             case PieceType.ROYAL_GIANT:
                 if (isWhite) setImage("images/WRoyalGiant.png");
-                else {
-                    setImage("images/BRoyalGiant.png");
-                    size = 90;
-                }
+                else setImage("images/BRoyalGiant.png");
                 break;
             case PieceType.SKELETON:
                 if (isWhite) setImage("images/WSkeleton.png");
@@ -69,10 +57,7 @@ public class Piece extends Actor
                 break;
             case PieceType.ROYAL_RECRUITS:
                 if (isWhite) setImage("images/WRoyalRecruits.png");
-                else {
-                    setImage("images/BRoyalRecruits.png");
-                    size = 90;
-                }
+                else setImage("images/BRoyalRecruits.png");
                 break;
         }
         getImage().scale(size, size);
