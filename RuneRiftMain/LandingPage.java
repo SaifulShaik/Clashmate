@@ -1,16 +1,17 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 
 /**
- * Write a description of class LandingPage here.
+ * Landing page for RuneRift game.
+ * Features animated title and navigation buttons.
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * @author RuneRift Team
+ * @version 1.0
  */
 public class LandingPage extends World
 {
     // Labels and Buttons
     private Button playButton;
-    private Button settingsButton;
+    private Button editorButton;
     private Button creditsButton;
     private Label titleLabel;
     private Label subtitleLabel;
@@ -21,47 +22,177 @@ public class LandingPage extends World
     private int targetTitleY;
     private int frameCount;
     private boolean titleAnimationComplete;
+    private boolean buttonsVisible;
     
     public LandingPage()
     {    
-        // Create a new world with 600x400 cells with a cell size of 1x1 pixels.
+        // Create a new world with 600x600 cells with a cell size of 1x1 pixels.
         super(600, 600, 1); 
         titleOpacity = 0;
-        titleY = 200;
+        titleY = 250;
         targetTitleY = 150;
         frameCount = 0;
         titleAnimationComplete = false;
+        buttonsVisible = false;
         prepare();
-        
     }
     
-    private void prepare() {
+    public void act()
+    {
+        frameCount++;
+        animateTitle();
+        checkButtonClicks();
+    }
+    
+    /**
+     * Animate the title fading in and moving up
+     */
+    private void animateTitle()
+    {
+        if (!titleAnimationComplete)
+        {
+            // Fade in animation
+            if (titleOpacity < 255)
+            {
+                titleOpacity += 5;
+                if (titleOpacity > 255) titleOpacity = 255;
+                
+                titleLabel.setFillColor(new Color(255, 255, 255, titleOpacity));
+                subtitleLabel.setFillColor(new Color(225, 225, 225, titleOpacity));
+            }
+            
+            // Move up animation
+            if (titleY > targetTitleY)
+            {
+                titleY -= 2;
+                titleLabel.setLocation(300, titleY);
+                subtitleLabel.setLocation(300, titleY + 70);
+            }
+            
+            // Check if animation is complete
+            if (titleOpacity >= 255 && titleY <= targetTitleY)
+            {
+                titleAnimationComplete = true;
+                showButtons();
+            }
+        }
+    }
+    
+    /**
+     * Show the buttons with a fade-in effect
+     */
+    private void showButtons()
+    {
+        if (!buttonsVisible)
+        {
+            buttonsVisible = true;
+        }
+    }
+    
+    /**
+     * Check if any buttons were clicked and navigate accordingly
+     */
+    private void checkButtonClicks()
+    {
+        if (titleAnimationComplete)
+        {
+            if (playButton.wasClicked())
+            {
+                Greenfoot.setWorld(new GridWorld());
+            }
+            else if (editorButton.wasClicked())
+            {
+                Greenfoot.setWorld(new EditorWorld());
+            }
+            else if (creditsButton.wasClicked())
+            {
+                showCredits();
+            }
+        }
+    }
+    
+    /**
+     * Display credits information
+     */
+    private void showCredits()
+    {
+        // Could navigate to a credits world or show a dialog
+        Greenfoot.playSound("sounds/click.wav");
+        // For now, just play a sound
+    }
+    
+    /**
+     * Prepare the world with all UI elements
+     */
+    private void prepare() 
+    {
         createBackground();
         
-        titleLabel = new Label("CLASHMATE", 80);
+        // Create title label
+        titleLabel = new Label("RUNERIFT", 80);
         titleLabel.setLineColor(new Color(0, 0, 0, 0));
         titleLabel.setFillColor(new Color(255, 255, 255, titleOpacity));
-        subtitleLabel = new Label("Clash Royale Chess.", 40);
+        addObject(titleLabel, 300, titleY);
+        
+        // Create subtitle label
+        subtitleLabel = new Label("Clash Royale Chess", 36);
         subtitleLabel.setLineColor(new Color(0, 0, 0, 0));
         subtitleLabel.setFillColor(new Color(225, 225, 225, titleOpacity));
-        addObject(titleLabel, 600, titleY);
-        addObject(subtitleLabel, 600, 200);
-        playButton = new Button("START GAME", 220, 65, 
-                                new Color(34, 200, 170), 
-                                new Color(50, 205, 50), 
-                                Color.WHITE, 30);
-        addObject(playButton, 900, 300);
+        addObject(subtitleLabel, 300, titleY + 70);
         
-        creditsButton = new Button("CREDITS", 180, 55,
+        // Create play button
+        playButton = new Button("START GAME", 220, 65, 
+                                new Color(34, 139, 34), 
+                                new Color(50, 205, 50), 
+                                Color.WHITE, 28);
+        addObject(playButton, 300, 320);
+        
+        // Create editor button
+        editorButton = new Button("EDITOR", 220, 65,
+                                   new Color(70, 130, 180),
+                                   new Color(100, 149, 237),
+                                   Color.WHITE, 28);
+        addObject(editorButton, 300, 410);
+        
+        // Create credits button
+        creditsButton = new Button("CREDITS", 220, 55,
                                    new Color(50, 50, 50),
                                    new Color(80, 80, 80),
                                    Color.WHITE, 24);
-        //addObject(creditsButton, 600, 520);
-        addObject(creditsButton, 900, 400);
+        addObject(creditsButton, 300, 500);
     }
 
+    /**
+     * Create a gradient background for the landing page
+     */
     private void createBackground()
     {
-        setBackground(new GreenfootImage(""));
+        GreenfootImage bg = new GreenfootImage(600, 600);
+        
+        // Create a gradient from dark blue to darker blue/purple
+        for (int y = 0; y < 600; y++)
+        {
+            float ratio = (float) y / 600;
+            int r = (int) (20 + (40 - 20) * ratio);
+            int g = (int) (30 + (20 - 30) * ratio);
+            int b = (int) (60 + (50 - 60) * ratio);
+            
+            bg.setColor(new Color(r, g, b));
+            bg.fillRect(0, y, 600, 1);
+        }
+        
+        // Add some stars for decoration
+        for (int i = 0; i < 50; i++)
+        {
+            int x = Greenfoot.getRandomNumber(600);
+            int y = Greenfoot.getRandomNumber(600);
+            int size = Greenfoot.getRandomNumber(2) + 1;
+            int brightness = Greenfoot.getRandomNumber(100) + 155;
+            
+            bg.setColor(new Color(brightness, brightness, brightness));
+            bg.fillOval(x, y, size, size);
+        }
+        
+        setBackground(bg);
     }
 }
