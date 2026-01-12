@@ -15,6 +15,7 @@ public class GridWorld extends World
     
     private ElixirBar elixirBarWhite;
     private ElixirBar elixirBarBlack;
+     private TurnManager turnManager;
 
     private Block[][] blockGrid;
     
@@ -33,10 +34,13 @@ public class GridWorld extends World
         blockGrid = new Block[CELLS_TALL][CELLS_WIDE];
         layoutGrid();
         
+        // add elixir bars
         elixirBarWhite = new ElixirBar();
         addObject(elixirBarWhite, 300, 30);
         elixirBarBlack = new ElixirBar();
         addObject(elixirBarBlack, 300, 570);
+        
+        turnManager = new TurnManager(elixirBarWhite, elixirBarBlack);
         
         // white pieces
         Piece wDarkPrince1 = new Piece(Piece.PieceType.DARK_PRINCE, blockGrid[7][0], true);
@@ -97,6 +101,16 @@ public class GridWorld extends World
             Piece recruit = new Piece(Piece.PieceType.ROYAL_RECRUITS, blockGrid[1][i], false);
             addObject(recruit, blockGrid[1][i].getX(), blockGrid[1][i].getY());
         }
+    }
+    
+    public TurnManager getTurnManager()
+    {
+        return turnManager;
+    }
+    
+    public void endTurn()
+    {
+        turnManager.nextTurn(); // Automatically adds elixir to next player
     }
     
     private void layoutGrid() {

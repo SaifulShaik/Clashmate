@@ -6,14 +6,20 @@ public class TurnManager
 {
     private Queue<String> turnQueue;
     private String currentPlayer;
+    private ElixirBar whiteElixirBar;
+    private ElixirBar blackElixirBar;
     
-    public TurnManager()
+    public TurnManager(ElixirBar whiteBar, ElixirBar blackBar)
     {
         turnQueue = new LinkedList<String>();
         // Add players to queue - White goes first
         turnQueue.add("WHITE");
         turnQueue.add("BLACK");
         currentPlayer = turnQueue.peek();
+        
+        // Store references to both elixir bars
+        this.whiteElixirBar = whiteBar;
+        this.blackElixirBar = blackBar;
     }
     
     /**
@@ -40,5 +46,21 @@ public class TurnManager
         String player = turnQueue.poll(); // Remove from front
         turnQueue.add(player); // Add to back
         currentPlayer = turnQueue.peek(); // Get new current player
+        
+        // Add elixir to the NEW current player when their turn starts
+        if (currentPlayer.equals("WHITE") && whiteElixirBar != null)
+        {
+            if (!whiteElixirBar.isFull())
+            {
+                whiteElixirBar.addElixir(1);
+            }
+        }
+        else if (currentPlayer.equals("BLACK") && blackElixirBar != null)
+        {
+            if (!blackElixirBar.isFull())
+            {
+                blackElixirBar.addElixir(1);
+            }
+        }
     }
 }
