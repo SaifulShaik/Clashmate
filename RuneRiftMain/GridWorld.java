@@ -22,6 +22,7 @@ public class GridWorld extends World
     private EndTurnButton endTurnButton;
 
     private Block[][] blockGrid;
+    private Piece selectedPiece;
     
     /**
      * Constructor for objects of class MyWorld.
@@ -160,6 +161,17 @@ public class GridWorld extends World
     
     public Block getBlock(int x, int y) {
         return blockGrid[x][y];
+    }
+    
+    public Piece getSelectedPiece() {
+        return selectedPiece;
+    }
+
+    public void setSelectedPiece(Piece piece) {
+        if (selectedPiece != null && selectedPiece != piece) {
+            selectedPiece.deselect();
+        }
+        selectedPiece = piece;
     }
 }
 

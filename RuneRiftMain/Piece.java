@@ -5,8 +5,8 @@ import java.util.ArrayList;
 /**
  * Write a description of class Piece here.
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * @author Joe Zhuo 
+ * @version 1/13/2026
  */
 public class Piece extends Actor
 {
@@ -58,11 +58,7 @@ public class Piece extends Actor
     private boolean checkIfMoveIsValid(Block targetBlock) {
         Piece pieceOnTarget = targetBlock.currentPiece();
         
-        if (pieceOnTarget != null) {
-            if (pieceOnTarget.checkIsWhite() == this.isWhite) {
-                return false; 
-            }
-        }
+        if (pieceOnTarget != null && isWhite == pieceOnTarget.checkIsWhite()) return false;
         
         int x = currentBlock.getBoardX();
         int y = currentBlock.getBoardY();
@@ -70,40 +66,76 @@ public class Piece extends Actor
         int targetX = targetBlock.getBoardX();
         int targetY = targetBlock.getBoardY();
         
-        int dy = targetY - y;
-        int dx = targetX - x;
-                
-        int direction = isWhite ? -1 : 1;
+        int dx = targetX - x; 
+        int dy = targetY - y; 
         
+        int direction = isWhite ? -1 : 1;
+    
         switch (type) {
             case PieceType.ROYAL_RECRUITS:
                 int startRow = isWhite ? 6 : 1;
                 boolean isFirstMove = (x == startRow);
     
                 if (pieceOnTarget == null) {
-                    if (dy != 0) return false; 
-                    if (dx == direction) return true; 
-                    if (isFirstMove && dx == 2 * direction) return true; 
+                    if (dy != 0) return false;
+                    if (dx == direction) return true;
+                    if (isFirstMove && dx == 2 * direction) {
+                        GridWorld world = (GridWorld) getWorld();
+                        Block intermediate = world.getBlock(x + direction, y);
+                        if (intermediate.currentPiece() == null) return true;
+                        return false;
+                    }
                     return false;
                 } else {
                     if (dx == direction && Math.abs(dy) == 1) return true;
                     return false;
                 }
+    
             case PieceType.DARK_PRINCE:
-                return dy == 0 || dx == 0;
+                if (dx != 0 && dy != 0) return false; // must be straight line
+                return isPathClear(x, y, targetX, targetY);
+    
             case PieceType.WITCH:
-                return Math.abs(dx) == Math.abs(dy) || dy == 0 || dx == 0;
+                if (dx != 0 && dy != 0 && Math.abs(dx) != Math.abs(dy)) return false; // diagonal or straight
+                return isPathClear(x, y, targetX, targetY);
+    
             case PieceType.SKELETON:
-                return dy == 0 && dx == direction;
+                if (dy != 0) return false;
+                if (dx != direction) return false;
+                return true; // 1-square forward
+    
             case PieceType.ROYAL_GIANT:
-                return Math.abs(dy) < 2 && Math.abs(dx) < 2;
+                if (Math.abs(dx) > 1 || Math.abs(dy) > 1) return false;
+                return true;
+    
             case PieceType.KNIGHT:
-                return (Math.abs(dx) == 2 && Math.abs(dy) == 1) || 
-                       (Math.abs(dy) == 2 && Math.abs(dx) == 1);
+                return (Math.abs(dx) == 2 && Math.abs(dy) == 1) || (Math.abs(dx) == 1 && Math.abs(dy) == 2);
+    
             case PieceType.MUSKETEER:
-                return Math.abs(dx) == Math.abs(dy);
+                if (Math.abs(dx) != Math.abs(dy)) return false;
+                return isPathClear(x, y, targetX, targetY);
         }
+    
         return false;
+    }
+    
+    private boolean isPathClear(int startX, int startY, int endX, int endY) {
+        GridWorld world = (GridWorld) getWorld();
+        
+        int dx = Integer.compare(endX, startX); 
+        int dy = Integer.compare(endY, startY); 
+    
+        int x = startX + dx;
+        int y = startY + dy;
+        
+        while (x != endX || y != endY) {
+            Block block = world.getBlock(x, y);
+            if (block.currentPiece() != null) return false;
+            x += dx;
+            y += dy;
+        }
+        
+        return true;
     }
     
     private void move() {        
@@ -120,11 +152,16 @@ public class Piece extends Actor
         if (selectedBlock == null) return;
         
         if (selectedBlock == currentBlock) {
-            isSelected = !isSelected;
-            showHitbox(isSelected ? Color.GREEN : Color.RED);
-            
-            if (isSelected) showPossibleMoves();
-            else clearHighlights();
+            GridWorld world = (GridWorld)getWorld();
+            if (isSelected) {
+                deselect();
+                world.setSelectedPiece(null);
+            } else {
+                world.setSelectedPiece(this);
+                isSelected = true;
+                showHitbox(Color.GREEN);
+                showPossibleMoves();
+            }
         }
         else if (isSelected) {
             //System.out.println(checkIfMoveIsValid(selectedBlock));
@@ -165,6 +202,12 @@ public class Piece extends Actor
             block.clearHighlight(); 
         }
         highlightedBlocks.clear();
+    }
+    
+    public void deselect() {
+        isSelected = false;
+        showHitbox(Color.RED);
+        clearHighlights();
     }
     
     private void setImage(PieceType type, boolean isWhite) {
