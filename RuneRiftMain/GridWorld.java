@@ -130,7 +130,6 @@ public class GridWorld extends World
         whiteTimer.setActive(currentPlayer.equals("WHITE"));
         blackTimer.setActive(currentPlayer.equals("BLACK"));
     }
-
     
     private void layoutGrid() {
         for (int i = 0; i < blockGrid.length; i++){

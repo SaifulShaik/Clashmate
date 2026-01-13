@@ -40,10 +40,19 @@ public class Piece extends Actor
     }
     
     private void moveTo(Block target) {
+        Piece pieceOnTarget = target.currentPiece();
+        
+        if (pieceOnTarget != null && pieceOnTarget.checkIsWhite() != this.isWhite) {
+            getWorld().removeObject(pieceOnTarget);
+        }
+        
+        if (currentBlock != null) currentBlock.setPiece(null);
+
         setLocation(target.getX(), target.getY());
         currentBlock = target;
-        clearHighlights();
         target.setPiece(this);
+        
+        clearHighlights();
     }
     
     private boolean checkIfMoveIsValid(Block targetBlock) {
@@ -135,12 +144,18 @@ public class Piece extends Actor
             for (int y = 0; y < GridWorld.CELLS_WIDE; y++) {
                 Block block = world.getBlock(x, y);
                 if (block != null && checkIfMoveIsValid(block)) {
-                    block.highlight(Color.GREEN); 
+                    Piece pieceOnTarget = block.currentPiece();
+                    if (pieceOnTarget != null && pieceOnTarget.checkIsWhite() != this.isWhite) {
+                        block.highlight(Color.RED);
+                    } else {
+                        block.highlight(Color.GREEN); 
+                    }
                     highlightedBlocks.add(block);
                 }
             }
         }
     }
+
     
     private void clearHighlights() {
         for (Block block : highlightedBlocks) {
