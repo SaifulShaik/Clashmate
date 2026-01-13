@@ -1,4 +1,6 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Write a description of class Piece here.
@@ -17,6 +19,8 @@ public class Piece extends Actor
     
     private boolean canMove;
     
+    private List<Block> highlightedBlocks = new ArrayList<>();
+    
     public Piece(PieceType type, Block block, boolean isWhite) {
         this.type = type;
         this.currentBlock = block;
@@ -24,7 +28,7 @@ public class Piece extends Actor
         
         setImage(type, isWhite);
         moveTo(currentBlock);
-        //showHitbox(Color.RED);
+        showHitbox(Color.RED);
     }
     
     private boolean isMyTurn()
@@ -32,15 +36,13 @@ public class Piece extends Actor
         GridWorld world = (GridWorld) getWorld();
         TurnManager tm = world.getTurnManager();
     
-        if (isWhite)
-            return tm.isPlayerTurn("WHITE");
-        else
-            return tm.isPlayerTurn("BLACK");
+        return isWhite ? tm.isPlayerTurn("WHITE") : tm.isPlayerTurn("BLACK");
     }
     
     private void moveTo(Block target) {
         setLocation(target.getX(), target.getY());
         currentBlock = target;
+        clearHighlights();
     }
     
     private boolean checkIfMoveIsValid(Block targetBlock) {
@@ -97,7 +99,10 @@ public class Piece extends Actor
         
         if (selectedBlock == currentBlock) {
             isSelected = !isSelected;
-            //showHitbox(isSelected ? Color.GREEN : Color.RED);
+            showHitbox(isSelected ? Color.GREEN : Color.RED);
+            
+            if (isSelected) showPossibleMoves();
+            else clearHighlights();
         }
         else if (isSelected) {
             //System.out.println(checkIfMoveIsValid(selectedBlock));
@@ -106,8 +111,32 @@ public class Piece extends Actor
                 
                 ((GridWorld) getWorld()).endTurn();
                 isSelected = false;
+                
+                showHitbox(Color.RED);
+                clearHighlights();
             }
         }
+    }
+    
+    private void showPossibleMoves() {
+        GridWorld world = (GridWorld) getWorld();
+        clearHighlights(); 
+        for (int x = 0; x < GridWorld.CELLS_TALL; x++) {
+            for (int y = 0; y < GridWorld.CELLS_WIDE; y++) {
+                Block block = world.getBlock(x, y);
+                if (block != null && checkIfMoveIsValid(block)) {
+                    block.highlight(Color.GREEN); 
+                    highlightedBlocks.add(block);
+                }
+            }
+        }
+    }
+    
+    private void clearHighlights() {
+        for (Block block : highlightedBlocks) {
+            block.clearHighlight(); 
+        }
+        highlightedBlocks.clear();
     }
     
     private void setImage(PieceType type, boolean isWhite) {
@@ -147,9 +176,10 @@ public class Piece extends Actor
     
     private void showHitbox(Color color) {
         GreenfootImage img = getImage();
-        img.setColor(color);
-        img.drawRect(0, 0, img.getWidth()-1, img.getHeight()-1);
-        setImage(img);
+        GreenfootImage hitboxImg = new GreenfootImage(img); // copy to avoid scaling issues
+        hitboxImg.setColor(color);
+        hitboxImg.drawRect(0, 0, img.getWidth()-1, img.getHeight()-1);
+        setImage(hitboxImg);
     }
     
     public void act()

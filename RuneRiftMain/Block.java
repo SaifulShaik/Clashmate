@@ -4,6 +4,8 @@ public class Block extends Actor
 {
     private int xPos, yPos;
     private int worldX, worldY;
+    
+    GreenfootImage originalImage;
 
     public Block(int x, int y, int worldX, int worldY)
     {
@@ -13,6 +15,8 @@ public class Block extends Actor
         this.worldY = worldY;
         
         drawCell();
+        
+        originalImage = getImage();
     }
 
     public void act()
@@ -25,15 +29,7 @@ public class Block extends Actor
         GreenfootImage image = new GreenfootImage(GridWorld.SIZE, GridWorld.SIZE);
 
         // Chessboard colour logic
-        if ((xPos + yPos) % 2 == 0)
-        {
-            image.setColor(Color.WHITE);
-        }
-        else
-        {
-            image.setColor(Color.BLACK);
-        }
-
+        image.setColor((xPos + yPos) % 2 == 0 ? Color.WHITE : Color.BLACK);
         image.fill();
 
         // Optional: show coordinates
@@ -41,6 +37,17 @@ public class Block extends Actor
         image.drawString(xPos + ", " + yPos, 4, image.getHeight() - 6);
 
         setImage(image);
+    }
+    
+    public void highlight(Color color) {
+        GreenfootImage highlightImg = new GreenfootImage(originalImage);
+        highlightImg.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 100)); // semi-transparent
+        highlightImg.fillRect(0, 0, getImage().getWidth(), getImage().getHeight());
+        setImage(highlightImg);
+    }
+    
+    public void clearHighlight() {
+        setImage(new GreenfootImage(originalImage));
     }
 
     public int getBoardX() {

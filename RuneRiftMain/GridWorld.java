@@ -159,7 +159,7 @@ public class GridWorld extends World
         return blockGrid[row][col];
     }
     
-    public Block getCellAt(int x, int y) {
+    public Block getBlock(int x, int y) {
         return blockGrid[x][y];
     }
 }
