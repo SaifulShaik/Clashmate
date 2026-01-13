@@ -41,9 +41,10 @@ public class GridWorld extends World
         addObject(endTurnButton, 300, 300);
         // add elixir bars
         elixirBarWhite = new ElixirBar();
-        addObject(elixirBarWhite, 180, 30);
+        addObject(elixirBarWhite, 180, 570);
+        elixirBarWhite.addElixir(1);
         elixirBarBlack = new ElixirBar();
-        addObject(elixirBarBlack, 180, 570);
+        addObject(elixirBarBlack, 180, 30);
         
         // Create separate timers 
         whiteTimer = new GameTimer("WHITE", 300);
