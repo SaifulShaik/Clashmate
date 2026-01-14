@@ -20,6 +20,7 @@ public class Piece extends Actor
     private boolean canMove;
     
     private boolean abilityUsed;
+    private int abilityState;
     private int abilityCost;
     
     private List<Block> highlightedBlocks = new ArrayList<>();
@@ -62,7 +63,36 @@ public class Piece extends Actor
         
         target.setPiece(this);
         
+        if (abilityState == 1 && type == PieceType.DARK_PRINCE) {
+            dealSplashDamage();
+        }
+        
         clearHighlights();
+    }
+    
+    private void dealSplashDamage() {
+        GridWorld gw = (GridWorld) getWorld();
+            
+        int x = currentBlock.getBoardX();
+        int y = currentBlock.getBoardY();
+        
+        Block block1 = gw.getBlock(x+1, y);
+        if (block1 != null) {
+            block1.removePiece(true);
+        }
+        Block block2 = gw.getBlock(x-1, y);
+        if (block2 != null) {
+            block2.removePiece(true);
+        }
+        Block block3 = gw.getBlock(x, y+1);
+        if (block3 != null) {
+            block3.removePiece(true);
+        }
+        Block block4 = gw.getBlock(x, y-1);
+        if (block4 != null) {
+            block4.removePiece(true);
+        }
+        abilityState = 0;
     }
     
     private boolean checkIfMoveIsValid(Block targetBlock) {
@@ -219,13 +249,17 @@ public class Piece extends Actor
     private void showPossibleMoves() {
         GridWorld world = (GridWorld) getWorld();
         clearHighlights(); 
+        
         for (int x = 0; x < GridWorld.CELLS_TALL; x++) {
             for (int y = 0; y < GridWorld.CELLS_WIDE; y++) {
                 Block block = world.getBlock(x, y);
                 if (block != null && checkIfMoveIsValid(block)) {
                     Piece pieceOnTarget = block.currentPiece();
                     if (pieceOnTarget != null && pieceOnTarget.checkIsWhite() != this.isWhite) {
-                        block.highlight(Color.RED);
+                        if (abilityState == 1 && type == PieceType.DARK_PRINCE) {
+                            block.highlight(Color.ORANGE);
+                        }
+                        else block.highlight(Color.RED);
                     } else {
                         block.highlight(Color.GREEN); 
                     }
@@ -297,10 +331,6 @@ public class Piece extends Actor
         GridWorld gw = (GridWorld) getWorld();
         gw.removeElixir(isWhite, abilityCost);
         
-        // refresh the possible moves
-        clearHighlights();
-        showPossibleMoves();
-        
         int x = currentBlock.getBoardX();
         int y = currentBlock.getBoardY();
         
@@ -322,7 +352,14 @@ public class Piece extends Actor
                 }
                 endTurn();
                 break;
+            case DARK_PRINCE:
+                abilityState = 1;
+                break;
         }
+        
+        // refresh the possible moves
+        clearHighlights();
+        showPossibleMoves();
     }
     
     public void clearBlock() {
@@ -339,7 +376,7 @@ public class Piece extends Actor
     {
         GridWorld gw = (GridWorld) getWorld();
         
-        if (isSelected && !abilityUsed && 
+        if (isSelected && (!abilityUsed || abilityState == 0) && 
             gw.isButtonClicked(isWhite) && 
             gw.getElixir(isWhite) >= abilityCost) 
                 useAbility();
