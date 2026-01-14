@@ -55,8 +55,18 @@ public class Block extends Actor
         piece = p;
     }
     
-    public void removePiece() {
+    public void removePiece(boolean removeFromWorld) {
+        System.out.println(piece == null);
+        if (piece == null) return;
+        
+        Piece p = piece;
         piece = null;
+        
+        if (removeFromWorld) {
+            getWorld().removeObject(p);
+        }
+        
+        p.clearBlock();
     }
     
     public void clearHighlight() {
@@ -69,13 +79,5 @@ public class Block extends Actor
     
     public int getBoardY() {
         return yPos;
-    }
-    
-    public int getX() {
-        return worldX;
-    }
-    
-    public int getY() {
-        return worldY;
     }
 }

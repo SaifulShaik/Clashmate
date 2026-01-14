@@ -19,12 +19,24 @@ public class Piece extends Actor
     
     private boolean canMove;
     
+    private boolean abilityUsed;
+    private int abilityCost;
+    
     private List<Block> highlightedBlocks = new ArrayList<>();
     
     public Piece(PieceType type, Block block, boolean isWhite) {
         this.type = type;
         this.currentBlock = block;
         this.isWhite = isWhite;
+        
+        switch(type) {
+            case DARK_PRINCE: abilityCost = 3; break;
+            case KNIGHT: abilityCost = 5; break;
+            case MUSKETEER: abilityCost = 2; break;
+            case ROYAL_GIANT: abilityCost = 5; break;
+            case WITCH: abilityCost = 5; break;
+            case ROYAL_RECRUITS: abilityCost = 1; break;
+        }
         
         setImage(type, isWhite);
         moveTo(currentBlock);
@@ -40,16 +52,14 @@ public class Piece extends Actor
     }
     
     private void moveTo(Block target) {
-        Piece pieceOnTarget = target.currentPiece();
-        
-        if (pieceOnTarget != null && pieceOnTarget.checkIsWhite() != this.isWhite) {
-            getWorld().removeObject(pieceOnTarget);
-        }
+        target.removePiece(true);
         
         if (currentBlock != null) currentBlock.setPiece(null);
 
         setLocation(target.getX(), target.getY());
+        
         currentBlock = target;
+        
         target.setPiece(this);
         
         clearHighlights();
@@ -88,6 +98,7 @@ public class Piece extends Actor
                     return false;
                 } else {
                     if (dx == direction && Math.abs(dy) == 1) return true;
+                    if (dx == direction && dy == 0 && abilityUsed) return true;
                     return false;
                 }
     
@@ -253,12 +264,56 @@ public class Piece extends Actor
         setImage(hitboxImg);
     }
     
+    public void useAbility() {
+        abilityUsed = true;
+        
+        GridWorld gw = (GridWorld) getWorld();
+        gw.removeElixir(isWhite, abilityCost);
+        
+        // refresh the possible moves
+        clearHighlights();
+        showPossibleMoves();
+        
+        int x = currentBlock.getBoardX();
+        int y = currentBlock.getBoardY();
+        
+        switch (type) {
+            case KNIGHT:
+                Block block1 = gw.getBlock(x-1, y-1);
+                if (block1 != null) {
+                    block1.removePiece(true);
+                }
+                Block block2 = gw.getBlock(x-1, y);
+                if (block2 != null) {
+                    block2.removePiece(true);
+                }
+                Block block3 = gw.getBlock(x-1, y+1);
+                if (block3 != null) {
+                    block3.removePiece(true);
+                }
+                break;
+        }
+    }
+    
+    public void clearBlock() {
+        currentBlock = null;
+        isSelected = false;
+        clearHighlights();
+    }
+    
     public boolean checkIsWhite() {
         return isWhite;
     }
     
     public void act()
     {
+        GridWorld gw = (GridWorld) getWorld();
+        
+        if (isSelected && 
+            gw.isButtonClicked(isWhite) && 
+            gw.getElixir(isWhite) >= abilityCost) 
+                useAbility();
+        
         move();
     }
 }

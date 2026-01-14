@@ -20,6 +20,8 @@ public class GridWorld extends World
     private GameTimer whiteTimer;
     private GameTimer blackTimer;
     private EndTurnButton endTurnButton;
+    private Button blackAbilityButton;
+    private Button whiteAbilityButton;
 
     private Block[][] blockGrid;
     private Piece selectedPiece;
@@ -36,24 +38,32 @@ public class GridWorld extends World
         blockGrid = new Block[CELLS_TALL][CELLS_WIDE];
         layoutGrid();
         
-        endTurnButton = new EndTurnButton();
-        addObject(endTurnButton, 300, 300);
+        //endTurnButton = new EndTurnButton();
+        //addObject(endTurnButton, 300, 300);
+        
         // add elixir bars
         elixirBarWhite = new ElixirBar();
-        addObject(elixirBarWhite, 180, 570);
+        addObject(elixirBarWhite, 120, 570);
         elixirBarWhite.addElixir(1);
+        
         elixirBarBlack = new ElixirBar();
-        addObject(elixirBarBlack, 180, 30);
+        addObject(elixirBarBlack, 120, 30);
         
         // Create separate timers 
         whiteTimer = new GameTimer("WHITE", 300);
-        addObject(whiteTimer, 420, 570);
+        addObject(whiteTimer, 330, 570);
         
         blackTimer = new GameTimer("BLACK", 300);
-        addObject(blackTimer, 420, 30); 
+        addObject(blackTimer, 330, 30); 
         
         whiteTimer.setActive(true);
         blackTimer.setActive(false);
+        
+        blackAbilityButton = new Button("Use ability", 120, 40);
+        addObject(blackAbilityButton, 500, 30);
+        
+        whiteAbilityButton = new Button("Use ability", 120, 40);
+        addObject(whiteAbilityButton, 500, 570);
         
         turnManager = new TurnManager(elixirBarWhite, elixirBarBlack);
         
@@ -160,13 +170,27 @@ public class GridWorld extends World
     }
     
     public Block getBlock(int x, int y) {
+        if (x >= CELLS_TALL || y >= CELLS_WIDE || x < 0 || y < 0) return null;
         return blockGrid[x][y];
     }
     
     public Piece getSelectedPiece() {
         return selectedPiece;
     }
-
+    
+    public boolean isButtonClicked(boolean isWhite) {
+        return isWhite ? whiteAbilityButton.wasClicked() : blackAbilityButton.wasClicked();
+    }
+    
+    public int getElixir(boolean isWhite) {
+        return isWhite ? elixirBarWhite.getElixir() : elixirBarBlack.getElixir();
+    }
+    
+    public void removeElixir(boolean isWhite, int amount) {
+        if (isWhite) elixirBarWhite.removeElixir(amount);
+        else elixirBarBlack.removeElixir(amount);
+    }
+    
     public void setSelectedPiece(Piece piece) {
         if (selectedPiece != null && selectedPiece != piece) {
             selectedPiece.deselect();
