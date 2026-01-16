@@ -249,42 +249,49 @@ public class EditorWorld extends World
         {
             timeMinutes = Math.min(timeMinutes + 1, 30); // Max 30 minutes
             updateTimeDisplay();
+            saveSettings(); // Auto-save on change
             SoundManager.getInstance().playClick();
         }
         else if (Greenfoot.mouseClicked(timeDownButton))
         {
             timeMinutes = Math.max(timeMinutes - 1, 1); // Min 1 minute
             updateTimeDisplay();
+            saveSettings(); // Auto-save on change
             SoundManager.getInstance().playClick();
         }
         else if (Greenfoot.mouseClicked(elixir1xButton))
         {
             elixirMultiplier = 1;
             updateElixirDisplay();
+            saveSettings(); // Auto-save on change
             SoundManager.getInstance().playClick();
         }
         else if (Greenfoot.mouseClicked(elixir2xButton))
         {
             elixirMultiplier = 2;
             updateElixirDisplay();
+            saveSettings(); // Auto-save on change
             SoundManager.getInstance().playClick();
         }
         else if (Greenfoot.mouseClicked(elixir3xButton))
         {
             elixirMultiplier = 3;
             updateElixirDisplay();
+            saveSettings(); // Auto-save on change
             SoundManager.getInstance().playClick();
         }
         else if (Greenfoot.mouseClicked(whiteSideButton))
         {
             isWhiteSide = true;
             updateSideDisplay();
+            saveSettings(); // Auto-save on change
             SoundManager.getInstance().playClick();
         }
         else if (Greenfoot.mouseClicked(blackSideButton))
         {
             isWhiteSide = false;
             updateSideDisplay();
+            saveSettings(); // Auto-save on change
             SoundManager.getInstance().playClick();
         }
         else if (Greenfoot.mouseClicked(startButton))
