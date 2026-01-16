@@ -26,6 +26,8 @@ public class GridWorld extends World
     // Game settings loaded from configuration
     private int elixirMultiplier;
     private int timeLimitSeconds;
+    private AbilityCostDisplay whiteCostDisplay;
+    private AbilityCostDisplay blackCostDisplay;
 
     private Block[][] blockGrid;
     private Piece selectedPiece;
@@ -69,11 +71,16 @@ public class GridWorld extends World
         blackAbilityButton = new Button("Use ability", 120, 40);
         addObject(blackAbilityButton, 500, 25);
         
+        blackCostDisplay = new AbilityCostDisplay();
+        addObject(blackCostDisplay, 580, 25);
+        
         whiteAbilityButton = new Button("Use ability", 120, 40);
         addObject(whiteAbilityButton, 500, 575);
         
-        // Create TurnManager with elixir multiplier
-        turnManager = new TurnManager(elixirBarWhite, elixirBarBlack, elixirMultiplier);
+        whiteCostDisplay = new AbilityCostDisplay();
+        addObject(whiteCostDisplay, 580, 575);
+        
+        turnManager = new TurnManager(elixirBarWhite, elixirBarBlack);
         
         // white pieces
         Piece wDarkPrince1 = new Piece(Piece.PieceType.DARK_PRINCE, blockGrid[7][0], true);
@@ -206,6 +213,22 @@ public class GridWorld extends World
             selectedPiece.deselect();
         }
         selectedPiece = piece;
+        
+        //hide or show ability cost
+        whiteCostDisplay.hide();
+        blackCostDisplay.hide();
+        
+        if (piece != null)
+        {
+            if (piece.checkIsWhite())
+            {
+                whiteCostDisplay.showCost(piece.getAbilityCost());
+            }
+            else
+            {
+                blackCostDisplay.showCost(piece.getAbilityCost());
+            }
+        }
     }
     
     /**

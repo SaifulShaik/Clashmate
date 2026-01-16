@@ -12,6 +12,7 @@ public class LandingPage extends World
     // Labels and Buttons
     private Button playButton;
     private Button creditsButton;
+    private Button infoButton;
     private Label titleLabel;
     private Label subtitleLabel;
     
@@ -103,6 +104,9 @@ public class LandingPage extends World
             {
                 showCredits();
             }
+            else if (infoButton.wasClicked()){
+                Greenfoot.setWorld(new InfoWorld());
+            }
         }
     }
     
@@ -148,6 +152,13 @@ public class LandingPage extends World
                                    new Color(100, 149, 237),
                                    Color.WHITE, 28);
         addObject(creditsButton, 300, 410);
+        
+        infoButton = new Button("INFO", 220, 65,
+                                   new Color(70, 130, 180),
+                                   new Color(100, 149, 237),
+                                   Color.WHITE, 28);
+                                   
+        addObject(infoButton, 300, 500);                 
     }
 
     /**

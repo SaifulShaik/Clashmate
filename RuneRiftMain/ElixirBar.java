@@ -1,5 +1,4 @@
 import greenfoot.*;
-
 public class ElixirBar extends Actor
 {
     private int maxElixir = 10;
@@ -63,28 +62,41 @@ public class ElixirBar extends Actor
     
     private void updateImage()
     {
-        GreenfootImage img = new GreenfootImage(barWidth + 4, barHeight + 4);
+        // Add space for the icon on the left
+        int iconSize = 50;
+        int iconPadding = 1;
+        int totalWidth = iconSize + iconPadding + barWidth + 4;
         
-        // Draw dark background
+        GreenfootImage img = new GreenfootImage(totalWidth, barHeight + 4);
+        
+        // Draw elixir icon on the left
+        GreenfootImage elixirIcon = new GreenfootImage("Elixir.png");
+        elixirIcon.scale(iconSize + 30, iconSize);
+        img.drawImage(elixirIcon, 0, (barHeight + 4 - iconSize) / 2); // Vertically center icon
+        
+        // Offset for the bar (after the icon)
+        int barStartX = iconSize + iconPadding;
+        
+        // Draw dark background for bar
         img.setColor(new Color(50, 50, 50));
-        img.fillRect(0, 0, barWidth + 4, barHeight + 4);
+        img.fillRect(barStartX, 0, barWidth + 4, barHeight + 4);
         
         // Draw purple fill
         int fillWidth = (barWidth * currentElixir) / maxElixir;
         img.setColor(new Color(138, 43, 226)); // Purple
-        img.fillRect(2, 2, fillWidth, barHeight);
+        img.fillRect(barStartX + 2, 2, fillWidth, barHeight);
         
         // Draw tick marks (vertical lines)
         img.setColor(Color.WHITE);
         int tickSpacing = barWidth / maxElixir;
         for (int i = 0; i <= maxElixir; i++)
         {
-            int x = 2 + (i * tickSpacing);
+            int x = barStartX + 2 + (i * tickSpacing);
             img.drawLine(x, 2, x, barHeight + 2);
         }
         
         // Draw white border
-        img.drawRect(1, 1, barWidth + 2, barHeight + 2);
+        img.drawRect(barStartX + 1, 1, barWidth + 2, barHeight + 2);
         
         setImage(img);
     }

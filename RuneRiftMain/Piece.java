@@ -433,4 +433,9 @@ public class Piece extends Actor
         
         move();
     }
+    
+    public int getAbilityCost()
+    {
+        return abilityCost;
+    }
 }
