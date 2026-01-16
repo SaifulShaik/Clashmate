@@ -23,8 +23,9 @@ public class Piece extends Actor
     private int abilityState;
     private int abilityCost;
 
+    private boolean lastTurnWasMine;
     private Block pendingExplosionBlock;
-    private boolean explosionQueued;
+    private int explosionQueue;
     private Bomb currentBomb;
 
     private List<Block> highlightedBlocks = new ArrayList<>();
@@ -267,7 +268,7 @@ public class Piece extends Actor
             if (!Greenfoot.mouseClicked(null)) return;
         }
         
-        if (type == PieceType.ROYAL_GIANT && explosionQueued) {
+        if (type == PieceType.ROYAL_GIANT && explosionQueue > 0) {
             return; 
         }
         
@@ -307,7 +308,7 @@ public class Piece extends Actor
 
     private void queueRoyalGiantExplosion(Block target) {
         pendingExplosionBlock = target;
-        explosionQueued = true;
+        explosionQueue = 3;
         abilityState = 0;
         
         Bomb bomb = new Bomb();
@@ -320,7 +321,7 @@ public class Piece extends Actor
     
     private void endTurn() {
         ((GridWorld) getWorld()).endTurn();
-        if (!(type == PieceType.ROYAL_GIANT && explosionQueued)) {
+        if (!(type == PieceType.ROYAL_GIANT && explosionQueue > 0)) {
             deselect();
         }
     }
@@ -490,11 +491,19 @@ public class Piece extends Actor
     public void act()
     {
         GridWorld gw = (GridWorld) getWorld();
-
-        if (explosionQueued && isMyTurn()) {
-            explodeRoyalGiant();
-            explosionQueued = false;
+        
+        boolean myTurn = isMyTurn();
+        
+        if (lastTurnWasMine && !myTurn) {
+            if (explosionQueue > 0) {
+                explosionQueue--;
+                if (explosionQueue == 0) {
+                    explodeRoyalGiant();
+                }
+            }
         }
+        
+        lastTurnWasMine = myTurn;
         
         if (isSelected && (!abilityUsed || abilityState == 0) && 
             gw.isButtonClicked(isWhite) && 
