@@ -35,7 +35,7 @@ public class Piece extends Actor
             case KNIGHT: abilityCost = 3; break;
             case MUSKETEER: abilityCost = 2; break;
             case ROYAL_GIANT: abilityCost = 7; break;
-            case WITCH: abilityCost = 4; break;
+            case WITCH: abilityCost = 6; break;
             case ROYAL_RECRUITS: abilityCost = 1; break;
         }
         
@@ -93,6 +93,34 @@ public class Piece extends Actor
             block4.removePiece(true);
         }
         abilityState = 0;
+    }
+    
+    private void spawnSkeletons() {
+        GridWorld gw = (GridWorld) getWorld();
+            
+        int x = currentBlock.getBoardX();
+        int y = currentBlock.getBoardY();
+        
+        Block block1 = gw.getBlock(x+1, y);
+        if (block1 != null && block1.currentPiece() == null) {
+            Piece skeleton = new Piece(PieceType.SKELETON, block1, this.isWhite);
+            gw.addObject(skeleton, block1.getX(), block1.getY());
+        }
+        Block block2 = gw.getBlock(x-1, y);
+        if (block2 != null && block2.currentPiece() == null) {
+            Piece skeleton = new Piece(PieceType.SKELETON, block2, this.isWhite);
+            gw.addObject(skeleton, block2.getX(), block2.getY());
+        }
+        Block block3 = gw.getBlock(x, y+1);
+        if (block3 != null && block3.currentPiece() == null) {
+            Piece skeleton = new Piece(PieceType.SKELETON, block3, this.isWhite);
+            gw.addObject(skeleton, block3.getX(), block3.getY());
+        }
+        Block block4 = gw.getBlock(x, y-1);
+        if (block4 != null && block4.currentPiece() == null) {
+            Piece skeleton = new Piece(PieceType.SKELETON, block4, this.isWhite);
+            gw.addObject(skeleton, block4.getX(), block4.getY());
+        }
     }
     
     private boolean checkIfMoveIsValid(Block targetBlock) {
@@ -154,30 +182,7 @@ public class Piece extends Actor
                 return (Math.abs(dx) == 2 && Math.abs(dy) == 1) || (Math.abs(dx) == 1 && Math.abs(dy) == 2);
     
             case PieceType.MUSKETEER:
-                if (abilityUsed) {
-                    // must move straight forward (no longer diagonal)
-                    if (dy != 0) return false;
-                    
-                    // must move forwards
-                    if (isWhite && dx >= 0) return false;
-                    if (!isWhite && dx <= 0) return false;
-                    
-                    GridWorld world = (GridWorld) getWorld();
-                    
-                    int step = isWhite ? -1 : 1;
-                    
-                    int cx = x + step;
-            
-                    while (cx != targetX) {
-                        Block b = world.getBlock(cx, y);
-                        if (b.currentPiece() != null) {
-                            return false; 
-                        }
-                        cx += step;
-                    }
-                    return pieceOnTarget != null;
-                }
-                else if (Math.abs(dx) != Math.abs(dy)) return false;
+                if (Math.abs(dx) != Math.abs(dy)) return false;
                 return isPathClear(x, y, targetX, targetY);
         }
     
@@ -202,6 +207,28 @@ public class Piece extends Actor
         }
         
         return true;
+    }
+    
+    private void snipe() {
+        int x = currentBlock.getBoardX();
+        int y = currentBlock.getBoardY();
+        
+        int direction = isWhite ? -1 : 1;
+        
+        GridWorld gw = (GridWorld) getWorld();
+        
+        int step = isWhite ? -1 : 1;
+        
+        int cx = x + step;
+
+        while (cx < gw.CELLS_TALL) {
+            Block b = gw.getBlock(cx, y);
+            if (b.currentPiece() != null) {
+                b.removePiece(true);
+                break;
+            }
+            cx += step;
+        }
     }
     
     private void move() {        
@@ -358,6 +385,14 @@ public class Piece extends Actor
                 break;
             case DARK_PRINCE:
                 abilityState = 1;
+                break;
+            case WITCH:
+                spawnSkeletons();
+                endTurn();
+                break;
+            case MUSKETEER:
+                snipe();
+                endTurn();
                 break;
         }
         
