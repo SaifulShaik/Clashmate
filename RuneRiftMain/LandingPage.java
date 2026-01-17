@@ -131,7 +131,7 @@ public class LandingPage extends World
     private void showCredits()
     {
         // Could navigate to a credits world or show a dialog
-        Greenfoot.playSound("sounds/click.wav");
+        Greenfoot.playSound("sounds/click.mp3");
         // For now, just play a sound
     }
     
