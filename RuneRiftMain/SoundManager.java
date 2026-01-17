@@ -5,7 +5,7 @@ import greenfoot.*;
  * Handles all game sounds including UI clicks, piece movements, and game events.
  * 
  * @author Saiful Shaik
- * @version 1.0
+ * @version
  */
 public class SoundManager  
 {

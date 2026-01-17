@@ -5,7 +5,7 @@ import java.io.*;
  * Handles saving/loading settings to/from a file.
  * 
  * @author Saiful Shaik
- * @version 1.0
+ * @version
  */
 public class GameSettings
 {
