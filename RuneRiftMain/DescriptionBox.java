@@ -1,5 +1,11 @@
 import greenfoot.*;
-
+/**
+ * Description that shows up after a piece is clicked on the info world
+ * Provides information on how a piece moves as well as its ability
+ * 
+ * @author Owen Lee
+ * @version
+ */
 class DescriptionBox extends Actor
 {
     private boolean isVisible = false;

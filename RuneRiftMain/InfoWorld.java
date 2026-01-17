@@ -1,5 +1,10 @@
 import greenfoot.*;
 
+/**
+ * 
+ * @author Owen Lee
+ * @version
+ */
 public class InfoWorld extends World
 {
     private DescriptionBox descriptionBox;

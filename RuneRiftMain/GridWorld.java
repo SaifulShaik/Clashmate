@@ -1,10 +1,11 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 
 /**
- * Write a description of class MyWorld here.
+ * Main world that uses a 2d array to create the board 
+ * using the coding techniques mentioned in class
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * @author
+ * @version
  */
 public class GridWorld extends World
 {

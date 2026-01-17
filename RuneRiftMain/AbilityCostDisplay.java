@@ -1,5 +1,12 @@
 import greenfoot.*;
 
+/**
+ * Shows the ability cost of a piece after it has been selected
+ * indicates through a number on a elixir symbol next to the ability button
+ * 
+ * @author Owen Lee
+ * @version
+ */
 public class AbilityCostDisplay extends Actor
 {
     private int cost = 0;

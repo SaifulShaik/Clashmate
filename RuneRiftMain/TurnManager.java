@@ -2,6 +2,13 @@ import greenfoot.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Manages turns using a queue and adds white and black to it to create the turn order
+ * 
+ * @author Owen Lee
+ * @version
+ */
+
 public class TurnManager
 {
     private Queue<String> turnQueue;
