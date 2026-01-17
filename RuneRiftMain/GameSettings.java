@@ -4,7 +4,7 @@ import java.io.*;
  * GameSettings manages persistent game configuration.
  * Handles saving/loading settings to/from a file.
  * 
- * @author RuneRift Team
+ * @author Saiful Shaik
  * @version 1.0
  */
 public class GameSettings
@@ -15,6 +15,11 @@ public class GameSettings
     private int elixirMultiplier = 1;  // 1, 2, or 3
     private int timeMinutes = 10;       // 1-30 minutes
     private boolean isWhiteSide = true;
+    
+    // Volume settings (0-100)
+    private int masterVolume = 100;
+    private int musicVolume = 80;
+    private int sfxVolume = 100;
     
     // Singleton instance
     private static GameSettings instance;
@@ -81,6 +86,30 @@ public class GameSettings
         return isWhiteSide;
     }
     
+    /**
+     * Get master volume (0-100)
+     */
+    public int getMasterVolume()
+    {
+        return masterVolume;
+    }
+    
+    /**
+     * Get music volume (0-100)
+     */
+    public int getMusicVolume()
+    {
+        return musicVolume;
+    }
+    
+    /**
+     * Get SFX volume (0-100)
+     */
+    public int getSfxVolume()
+    {
+        return sfxVolume;
+    }
+    
     // === SETTERS WITH VALIDATION ===
     
     /**
@@ -107,6 +136,30 @@ public class GameSettings
         this.isWhiteSide = isWhite;
     }
     
+    /**
+     * Set master volume (clamped to 0-100)
+     */
+    public void setMasterVolume(int volume)
+    {
+        this.masterVolume = Math.max(0, Math.min(100, volume));
+    }
+    
+    /**
+     * Set music volume (clamped to 0-100)
+     */
+    public void setMusicVolume(int volume)
+    {
+        this.musicVolume = Math.max(0, Math.min(100, volume));
+    }
+    
+    /**
+     * Set SFX volume (clamped to 0-100)
+     */
+    public void setSfxVolume(int volume)
+    {
+        this.sfxVolume = Math.max(0, Math.min(100, volume));
+    }
+    
     // === PERSISTENCE ===
     
     /**
@@ -120,6 +173,9 @@ public class GameSettings
             writer.println("elixirMultiplier=" + elixirMultiplier);
             writer.println("timeMinutes=" + timeMinutes);
             writer.println("isWhiteSide=" + isWhiteSide);
+            writer.println("masterVolume=" + masterVolume);
+            writer.println("musicVolume=" + musicVolume);
+            writer.println("sfxVolume=" + sfxVolume);
             return true;
         }
         catch (IOException e)
@@ -164,6 +220,15 @@ public class GameSettings
                             break;
                         case "isWhiteSide":
                             setWhiteSide(Boolean.parseBoolean(value));
+                            break;
+                        case "masterVolume":
+                            setMasterVolume(Integer.parseInt(value));
+                            break;
+                        case "musicVolume":
+                            setMusicVolume(Integer.parseInt(value));
+                            break;
+                        case "sfxVolume":
+                            setSfxVolume(Integer.parseInt(value));
                             break;
                     }
                 }

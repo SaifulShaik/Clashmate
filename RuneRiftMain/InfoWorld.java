@@ -25,14 +25,14 @@ public class InfoWorld extends World
         
         // Create description box (initially hidden)
         descriptionBox = new DescriptionBox();
-        addObject(descriptionBox, 500, 300);
+        addObject(descriptionBox, getWidth() / 2+ 10, getHeight() / 2 + 30);
         descriptionBox.hide();
     }
     
     public void act()
     {
         // Click back button to return to LandingPage
-        if (Greenfoot.mouseClicked(backButton))
+        if (backButton.wasClicked())
         {
             Greenfoot.setWorld(new LandingPage());
         }

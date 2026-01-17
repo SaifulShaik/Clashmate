@@ -16,6 +16,7 @@ class PieceImage extends Actor
     {
         if (Greenfoot.mouseClicked(this))
         {
+            SoundManager.getInstance().playClick();
             InfoWorld world = (InfoWorld)getWorld();
             world.showDescription(pieceName);
         }

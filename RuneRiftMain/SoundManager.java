@@ -4,7 +4,7 @@ import greenfoot.*;
  * SoundManager - Centralized sound management for RuneRift.
  * Handles all game sounds including UI clicks, piece movements, and game events.
  * 
- * @author RuneRift Team
+ * @author Saiful Shaik
  * @version 1.0
  */
 public class SoundManager  
@@ -21,9 +21,13 @@ public class SoundManager
     public static final String WIN = "win.mp3";
     public static final String LOSE = "lose.mp3";
     public static final String START = "start.mp3";
+    public static final String MUSIC_MENU = "menu_music.mp3";
     
     // Volume control
     private boolean soundEnabled = true;
+    
+    // Background music
+    private GreenfootSound menuMusic;
 
     /**
      * Private constructor for singleton pattern
@@ -45,7 +49,7 @@ public class SoundManager
     }
     
     /**
-     * Play a sound effect
+     * Play a sound effect with volume from settings
      * @param soundFile the name of the sound file to play
      */
     public void play(String soundFile)
@@ -54,13 +58,33 @@ public class SoundManager
         {
             try
             {
-                Greenfoot.playSound(soundFile);
+                GreenfootSound sound = new GreenfootSound(soundFile);
+                sound.setVolume(getEffectiveSfxVolume());
+                sound.play();
             }
             catch (Exception e)
             {
                 // Sound file not found, fail silently
             }
         }
+    }
+    
+    /**
+     * Get effective SFX volume (master * sfx / 100)
+     */
+    public int getEffectiveSfxVolume()
+    {
+        GameSettings settings = GameSettings.getInstance();
+        return (settings.getMasterVolume() * settings.getSfxVolume()) / 100;
+    }
+    
+    /**
+     * Get effective music volume (master * music / 100)
+     */
+    public int getEffectiveMusicVolume()
+    {
+        GameSettings settings = GameSettings.getInstance();
+        return (settings.getMasterVolume() * settings.getMusicVolume()) / 100;
     }
     
     /**
@@ -151,5 +175,47 @@ public class SoundManager
     public void toggleSound()
     {
         soundEnabled = !soundEnabled;
+    }
+    
+    /**
+     * Play menu background music (loops)
+     */
+    public void playMenuMusic()
+    {
+        try
+        {
+            if (menuMusic == null)
+            {
+                menuMusic = new GreenfootSound(MUSIC_MENU);
+            }
+            menuMusic.setVolume(getEffectiveMusicVolume());
+            menuMusic.playLoop();
+        }
+        catch (Exception e)
+        {
+            // Music file not found, fail silently
+        }
+    }
+    
+    /**
+     * Stop menu music
+     */
+    public void stopMenuMusic()
+    {
+        if (menuMusic != null)
+        {
+            menuMusic.stop();
+        }
+    }
+    
+    /**
+     * Update music volume in real-time (call when slider changes)
+     */
+    public void updateMusicVolume()
+    {
+        if (menuMusic != null)
+        {
+            menuMusic.setVolume(getEffectiveMusicVolume());
+        }
     }
 }

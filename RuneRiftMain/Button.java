@@ -114,7 +114,12 @@ public class Button extends Actor
     
     public boolean wasClicked()
     {
-        return Greenfoot.mouseClicked(this);
+        if (Greenfoot.mouseClicked(this))
+        {
+            SoundManager.getInstance().playClick();
+            return true;
+        }
+        return false;
     }
 
     /**

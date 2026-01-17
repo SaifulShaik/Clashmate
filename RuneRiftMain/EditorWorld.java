@@ -4,7 +4,7 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  * Editor World for configuring game settings before starting.
  * Allows adjustment of Time, Elixir, and Side selection.
  * 
- * @author RuneRift Team
+ * @author Saiful Shaik
  * @version 1.0
  */
 public class EditorWorld extends World
@@ -31,6 +31,7 @@ public class EditorWorld extends World
     private Button elixir3xButton;
     private Button whiteSideButton;
     private Button blackSideButton;
+    private Button backButton;
     private Button startButton;
     
     // Visual elements
@@ -171,10 +172,14 @@ public class EditorWorld extends World
         sideValueLabel.setLineColor(new Color(150, 150, 100));
         addObject(sideValueLabel, 300, 470 + yOffset);
         
-        // === START BUTTON ===
+        // === BACK AND START BUTTONS ===
+        backButton = new Button("← BACK", 140, 60,
+            new Color(70, 70, 90), new Color(100, 100, 130), Color.WHITE, 24);
+        addObject(backButton, 170, 540 + yOffset);
+        
         startButton = new Button("START GAME", 200, 60, 
             new Color(50, 150, 50), new Color(70, 200, 70), Color.WHITE, 26);
-        addObject(startButton, 300, 540 + yOffset);
+        addObject(startButton, 380, 540 + yOffset);
     }
     
     /**
@@ -245,56 +250,53 @@ public class EditorWorld extends World
      */
     private void handleButtonClicks()
     {
-        if (Greenfoot.mouseClicked(timeUpButton))
+        if (timeUpButton.wasClicked())
         {
             timeMinutes = Math.min(timeMinutes + 1, 30); // Max 30 minutes
             updateTimeDisplay();
             saveSettings(); // Auto-save on change
-            SoundManager.getInstance().playClick();
         }
-        else if (Greenfoot.mouseClicked(timeDownButton))
+        else if (timeDownButton.wasClicked())
         {
             timeMinutes = Math.max(timeMinutes - 1, 1); // Min 1 minute
             updateTimeDisplay();
             saveSettings(); // Auto-save on change
-            SoundManager.getInstance().playClick();
         }
-        else if (Greenfoot.mouseClicked(elixir1xButton))
+        else if (elixir1xButton.wasClicked())
         {
             elixirMultiplier = 1;
             updateElixirDisplay();
             saveSettings(); // Auto-save on change
-            SoundManager.getInstance().playClick();
         }
-        else if (Greenfoot.mouseClicked(elixir2xButton))
+        else if (elixir2xButton.wasClicked())
         {
             elixirMultiplier = 2;
             updateElixirDisplay();
             saveSettings(); // Auto-save on change
-            SoundManager.getInstance().playClick();
         }
-        else if (Greenfoot.mouseClicked(elixir3xButton))
+        else if (elixir3xButton.wasClicked())
         {
             elixirMultiplier = 3;
             updateElixirDisplay();
             saveSettings(); // Auto-save on change
-            SoundManager.getInstance().playClick();
         }
-        else if (Greenfoot.mouseClicked(whiteSideButton))
+        else if (whiteSideButton.wasClicked())
         {
             isWhiteSide = true;
             updateSideDisplay();
             saveSettings(); // Auto-save on change
-            SoundManager.getInstance().playClick();
         }
-        else if (Greenfoot.mouseClicked(blackSideButton))
+        else if (blackSideButton.wasClicked())
         {
             isWhiteSide = false;
             updateSideDisplay();
             saveSettings(); // Auto-save on change
-            SoundManager.getInstance().playClick();
         }
-        else if (Greenfoot.mouseClicked(startButton))
+        else if (backButton.wasClicked())
+        {
+            Greenfoot.setWorld(new LandingPage());
+        }
+        else if (startButton.wasClicked())
         {
             startGame();
         }

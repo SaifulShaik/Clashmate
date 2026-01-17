@@ -33,11 +33,13 @@ class DescriptionBox extends Actor
             if (mouse != null)
             {
                 // Check if clicked on X button area (top right)
+                // Image is 400x400, so offset is 200 from center
                 int relativeX = mouse.getX() - (getX() - 200);
-                int relativeY = mouse.getY() - (getY() - 250);
+                int relativeY = mouse.getY() - (getY() - 200);
                 
                 if (relativeX >= 350 && relativeX <= 380 && relativeY >= 10 && relativeY <= 40)
                 {
+                    SoundManager.getInstance().playClick();
                     hide();
                 }
             }
@@ -51,7 +53,7 @@ class DescriptionBox extends Actor
     
     private void createDescriptionImage(String pieceName)
     {
-        GreenfootImage img = new GreenfootImage(400, 500);
+        GreenfootImage img = new GreenfootImage(400, 400);
         
         // Background
         img.setColor(new Color(240, 240, 240));

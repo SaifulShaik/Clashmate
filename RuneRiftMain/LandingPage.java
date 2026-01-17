@@ -4,15 +4,16 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  * Landing page for RuneRift game.
  * Features animated title and navigation buttons.
  * 
- * @author RuneRift Team
- * @version 1.0
+ * @author Saiful Shaik
+ * @version
  */
 public class LandingPage extends World
 {
     // Labels and Buttons
     private Button playButton;
-    private Button creditsButton;
+    private Button settingsButton;
     private Button infoButton;
+    private CreditsButton creditsButton;
     private Label titleLabel;
     private Label subtitleLabel;
     
@@ -23,6 +24,7 @@ public class LandingPage extends World
     private int frameCount;
     private boolean titleAnimationComplete;
     private boolean buttonsVisible;
+    private boolean musicStarted;
     
     public LandingPage()
     {    
@@ -34,11 +36,19 @@ public class LandingPage extends World
         frameCount = 0;
         titleAnimationComplete = false;
         buttonsVisible = false;
+        musicStarted = false;
         prepare();
     }
     
     public void act()
     {
+        // Start music on first act (when Greenfoot Run is pressed)
+        if (!musicStarted)
+        {
+            SoundManager.getInstance().playMenuMusic();
+            musicStarted = true;
+        }
+        
         frameCount++;
         animateTitle();
         checkButtonClicks();
@@ -100,12 +110,17 @@ public class LandingPage extends World
             {
                 Greenfoot.setWorld(new EditorWorld());
             }
+            else if (settingsButton.wasClicked())
+            {
+                Greenfoot.setWorld(new SettingsWorld());
+            }
+            else if (infoButton.wasClicked())
+            {
+                Greenfoot.setWorld(new InfoWorld());
+            }
             else if (creditsButton.wasClicked())
             {
-                showCredits();
-            }
-            else if (infoButton.wasClicked()){
-                Greenfoot.setWorld(new InfoWorld());
+                Greenfoot.setWorld(new CreditsWorld());
             }
         }
     }
@@ -153,12 +168,16 @@ public class LandingPage extends World
                                    
         addObject(infoButton, 300, 410);
         
-        // Create editor button
-        creditsButton = new Button("CREDITS", 220, 65,
-                                   new Color(70, 130, 180),
-                                   new Color(100, 149, 237),
+        // Create settings button (replacing the old credits button position)
+        settingsButton = new Button("SETTINGS", 220, 65,
+                                   new Color(90, 90, 120),
+                                   new Color(120, 120, 160),
                                    Color.WHITE, 28);
-        addObject(creditsButton, 300, 500);                 
+        addObject(settingsButton, 300, 500);
+        
+        // Create small credits button in bottom right corner
+        creditsButton = new CreditsButton();
+        addObject(creditsButton, 555, 580);
     }
 
     /**
@@ -181,5 +200,21 @@ public class LandingPage extends World
         bg.drawImage(img, x, y);
         
         setBackground(bg);
+    }
+    
+    /**
+     * Called when Greenfoot is paused/stopped
+     */
+    public void stopped()
+    {
+        SoundManager.getInstance().stopMenuMusic();
+    }
+    
+    /**
+     * Called when Greenfoot is started/resumed
+     */
+    public void started()
+    {
+        SoundManager.getInstance().playMenuMusic();
     }
 }
