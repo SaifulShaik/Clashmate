@@ -23,11 +23,6 @@ public class Piece extends Actor
     private int abilityState;
     private int abilityCost;
 
-    private boolean lastTurnWasMine;
-    private Block pendingExplosionBlock;
-    private int explosionQueue;
-    private Bomb currentBomb;
-
     private List<Block> highlightedBlocks = new ArrayList<>();
     
     public Piece(PieceType type, Block block, boolean isWhite) {
@@ -248,42 +243,12 @@ public class Piece extends Actor
         }
     }
 
-    private void explodeRoyalGiant() {
-        if (pendingExplosionBlock == null) return;
-
-        GridWorld gw = (GridWorld) getWorld();
-
-        int cx = pendingExplosionBlock.getBoardX();
-        int cy = pendingExplosionBlock.getBoardY();
-
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                Block b = gw.getBlock(cx + dx, cy + dy);
-                if (b != null && b.currentPiece() != null) {
-                    if (b.currentPiece().checkIsWhite() != this.isWhite) {
-                        b.removePiece(true);
-                    }
-                }
-            }
-        }
-
-        pendingExplosionBlock = null;
-        clearHighlights();
-        
-        gw.removeObject(currentBomb);
-        currentBomb = null;
-    }
-    
     private void move() {        
         if (!Greenfoot.mouseClicked(null)) return;
         if (!isMyTurn()) return;
         
         if (type == PieceType.ROYAL_GIANT && abilityState == 1) {
             if (!Greenfoot.mouseClicked(null)) return;
-        }
-        
-        if (type == PieceType.ROYAL_GIANT && explosionQueue > 0) {
-            return; 
         }
         
         MouseInfo mouse = Greenfoot.getMouseInfo();
@@ -321,14 +286,9 @@ public class Piece extends Actor
     }
 
     private void queueRoyalGiantExplosion(Block target) {
-        pendingExplosionBlock = target;
-        explosionQueue = 3;
         abilityState = 0;
-        
-        Bomb bomb = new Bomb();
-        currentBomb = bomb;
         GridWorld gw = (GridWorld) getWorld();
-        gw.addObject(bomb, target.getX(), target.getY());
+        gw.addBomb(target, isWhite);
         
         clearHighlights();
     }
@@ -336,9 +296,6 @@ public class Piece extends Actor
     private void endTurn() {
         ((GridWorld) getWorld()).endTurn();
         abilityUsed = false;
-        if (!(type == PieceType.ROYAL_GIANT && explosionQueue > 0)) {
-            deselect();
-        }
     }
     
     private void showPossibleMoves() {
@@ -528,19 +485,6 @@ public class Piece extends Actor
     public void act()
     {
         GridWorld gw = (GridWorld) getWorld();
-        
-        boolean myTurn = isMyTurn();
-        
-        if (lastTurnWasMine && !myTurn) {
-            if (explosionQueue > 0) {
-                explosionQueue--;
-                if (explosionQueue == 0) {
-                    explodeRoyalGiant();
-                }
-            }
-        }
-        
-        lastTurnWasMine = myTurn;
         
         if (isSelected && (!abilityUsed || abilityState == 0) && 
             gw.isButtonClicked(isWhite) && 

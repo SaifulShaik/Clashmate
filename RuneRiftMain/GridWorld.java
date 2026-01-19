@@ -1,4 +1,6 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Main world that uses a 2d array to create the board 
@@ -23,6 +25,8 @@ public class GridWorld extends World
     private EndTurnButton endTurnButton;
     private Button blackAbilityButton;
     private Button whiteAbilityButton;
+    
+    private List<Bomb> bombs;
     
     // Game settings loaded from configuration
     private int elixirMultiplier;
@@ -81,6 +85,8 @@ public class GridWorld extends World
         addObject(whiteCostDisplay, 580, 575);
         
         turnManager = new TurnManager(elixirBarWhite, elixirBarBlack, elixirMultiplier);
+        
+        bombs = new ArrayList<>();
         
         // white pieces
         Piece wDarkPrince1 = new Piece(Piece.PieceType.DARK_PRINCE, blockGrid[7][0], true);
@@ -150,6 +156,7 @@ public class GridWorld extends World
     
     public void endTurn(){
         turnManager.nextTurn();
+        progressBombExplosions();
         
         // Switch which timer is active based on current player
         String currentPlayer = turnManager.getCurrentPlayer();
@@ -184,6 +191,18 @@ public class GridWorld extends World
         }
     
         return blockGrid[row][col];
+    }
+    
+    public void addBomb(Block location, boolean isWhite) {
+        Bomb bomb = new Bomb(location, isWhite);
+        addObject(bomb, location.getX(), location.getY());
+        bombs.add(bomb);
+    }
+    
+    private void progressBombExplosions() {
+        for (Bomb b : bombs) {
+            b.progressExplosion();
+        }
     }
     
     public Block getBlock(int x, int y) {
