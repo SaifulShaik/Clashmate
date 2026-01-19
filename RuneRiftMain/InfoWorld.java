@@ -5,7 +5,7 @@ import greenfoot.*;
  * @author Owen Lee & Saiful Shaik
  * @version
  */
-public class InfoWorld extends World
+public class InfoWorld extends MenuWorld
 {
     private DescriptionBox descriptionBox;
     private Button backButton;

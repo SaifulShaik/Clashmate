@@ -170,6 +170,8 @@ class DescriptionBox extends Actor
                        "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" +
                        "Movement:\n" +
                        "• Moves like the pawn\n" +
+                       "• Moves 1 space forwards,take 2 steps if on starting spot\n" +
+                       "• Takes pieces in front diagonally\n" +
                        "Special Ability (1 Elixir):\n" +
                        "• Break the Limits: Gain the ability\n" +
                        "  to take the piece in front\n" +
