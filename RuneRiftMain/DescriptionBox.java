@@ -179,6 +179,19 @@ class DescriptionBox extends Actor
                        "Use your pawns to limit your opponents squares\n"+
                        "by pushing them back!";
                        
+            case "SKELETON":
+                return "SKELETON\n" +
+                       "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" +
+                       "Movement:\n" +
+                       "• Moves like the pawn\n" +
+                       "• Moves 1 space forwards, move 2 space if on starting spot\n" +
+                       "• Takes pieces in front diagonally\n" +
+                       "No Special Ability\n" +
+                       "Tips:\n" +
+                       "Use your skeletons to protect your stronger pieces!";
+                       
+            
+                       
             default:
                 return "No description available.\n\n" +
                        "Add your description in the\n" +

@@ -76,9 +76,10 @@ public class InfoWorld extends MenuWorld
         
         
         // Row 2 - Bottom pieces 
-        addObject(new PieceImage("DARK_PRINCE", "BDarkPrince.png"), 270, 405);
-        addObject(new PieceImage("WITCH", "BWitch.png"), 410, 405);
-        addObject(new PieceImage("ROYAL_GIANT", "BRoyalGiant.png"), 550, 405);
+        addObject(new PieceImage("DARK_PRINCE", "BDarkPrince.png"), 200, 405);
+        addObject(new PieceImage("WITCH", "BWitch.png"), 340, 405);
+        addObject(new PieceImage("ROYAL_GIANT", "BRoyalGiant.png"), 480, 405);
+        addObject(new PieceImage("SKELETON", "BSkeleton.png"), 620, 405);
         
        
         
