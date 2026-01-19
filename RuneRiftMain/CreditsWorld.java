@@ -35,6 +35,10 @@ public class CreditsWorld extends MenuWorld
     private boolean isDraggingScrollbar = false;
     private int dragOffsetY = 0;
     
+    // Mouse drag scrolling
+    private boolean isDraggingContent = false;
+    private int lastMouseY = 0;
+    
     // Exit animation
     private boolean isExiting = false;
     private int exitAlpha = 0;
@@ -99,16 +103,43 @@ public class CreditsWorld extends MenuWorld
     }
     
     /**
-     * Handle mouse wheel and drag scrolling
+     * Handle mouse drag and keyboard scrolling
      */
     private void handleScrolling()
     {
         MouseInfo mouse = Greenfoot.getMouseInfo();
         
+        // Mouse drag scrolling - click and drag to scroll
         if (mouse != null)
         {
-            // Check for mouse wheel scrolling
-            // Greenfoot doesn't have direct wheel support, so use key presses
+            int mouseY = mouse.getY();
+            
+            // Start dragging when mouse is pressed in viewport area
+            if (Greenfoot.mousePressed(null) && !isDraggingScrollbar)
+            {
+                int mouseX = mouse.getX();
+                // Only start drag if within content area (not on scrollbar)
+                if (mouseX < scrollbarX - 20 && mouseY >= VIEWPORT_TOP && mouseY <= VIEWPORT_BOTTOM)
+                {
+                    isDraggingContent = true;
+                    lastMouseY = mouseY;
+                }
+            }
+            
+            // While dragging, scroll based on mouse movement
+            if (isDraggingContent && Greenfoot.mouseDragged(null))
+            {
+                int deltaY = mouseY - lastMouseY;
+                scroll(deltaY);
+                lastMouseY = mouseY;
+                scrollHintFadingOut = true;
+            }
+            
+            // Stop dragging when mouse is released
+            if (Greenfoot.mouseClicked(null) || Greenfoot.mouseDragEnded(null))
+            {
+                isDraggingContent = false;
+            }
         }
         
         // Keyboard scrolling
