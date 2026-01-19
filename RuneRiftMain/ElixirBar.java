@@ -1,4 +1,13 @@
 import greenfoot.*;
+
+/**
+ * Elixir bar used in the game to track how much elixir each player has
+ * Indicates elixir through a bar filling up
+ * 
+ * @author Owen Lee
+ * @version
+ */
+
 public class ElixirBar extends Actor
 {
     private int maxElixir = 10;

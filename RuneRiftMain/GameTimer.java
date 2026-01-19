@@ -1,5 +1,14 @@
 import greenfoot.*;
 
+/**
+ * Timer that counts down to establish a time limit for the game
+ * Both white and black have their own timer
+ * When a player plays a move, their turn ends and the next players automatically starts
+ * 
+ * @author Owen Lee
+ * @version
+ */
+
 public class GameTimer extends Actor
 {
     private int timeLeft;

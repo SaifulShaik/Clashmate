@@ -1,13 +1,11 @@
 import greenfoot.*;
 
 /**
- * Info world showing piece guide and descriptions.
- * Extends MenuWorld for common menu functionality.
  * 
- * @author Saiful Shaik
- * @version 1.0
+ * @author Owen Lee & Saiful Shaik
+ * @version
  */
-public class InfoWorld extends MenuWorld
+public class InfoWorld extends World
 {
     private DescriptionBox descriptionBox;
     private Button backButton;

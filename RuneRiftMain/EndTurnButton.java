@@ -1,5 +1,12 @@
 import greenfoot.*;
 
+/**
+ * Allows user to instantly end a turn, used for development purposes
+ * 
+ * @author Owen Lee
+ * @version
+ */
+
 public class EndTurnButton extends Actor
 {
     public EndTurnButton()

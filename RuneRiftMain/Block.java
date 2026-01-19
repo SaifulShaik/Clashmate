@@ -1,5 +1,11 @@
 import greenfoot.*;
 
+/**
+ * Block code from class
+ * 
+ * @author Jordan Cohen
+ * @version
+ */
 public class Block extends Actor
 {
     private int xPos, yPos;
