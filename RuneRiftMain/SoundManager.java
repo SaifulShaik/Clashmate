@@ -18,9 +18,12 @@ public class SoundManager
     public static final String SELECT = "select.mp3";
     public static final String LOSE = "draw.mp3";
     public static final String START = "start.mp3";
-    public static final String MUSIC_MENU = "menu_music1.mp3";
-    public static final String MUSIC_MENU = "menu_music2.mp3";
-    public static final String MUSIC_MENU = "menu_music3.mp3";
+    public static final String MUSIC_MENU1 = "menu_music1.mp3";
+    public static final String MUSIC_MENU2 = "menu_music2.mp3";
+    public static final String MUSIC_MENU3 = "menu_music3.mp3";
+    
+    // Array of menu music files for random selection
+    private static final String[] MENU_MUSIC_FILES = {MUSIC_MENU1, MUSIC_MENU2, MUSIC_MENU3};
     
     // Volume control
     private boolean soundEnabled = true;
@@ -162,6 +165,7 @@ public class SoundManager
     
     /**
      * Play menu background music (loops)
+     * Randomly selects one of the three menu music tracks
      */
     public void playMenuMusic()
     {
@@ -169,7 +173,10 @@ public class SoundManager
         {
             if (menuMusic == null)
             {
-                menuMusic = new GreenfootSound(MUSIC_MENU);
+                // Randomly select one of the menu music files
+                int randomIndex = Greenfoot.getRandomNumber(MENU_MUSIC_FILES.length);
+                String selectedMusic = MENU_MUSIC_FILES[randomIndex];
+                menuMusic = new GreenfootSound(selectedMusic);
             }
             menuMusic.setVolume(getEffectiveMusicVolume());
             menuMusic.playLoop();
