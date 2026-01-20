@@ -59,7 +59,33 @@ public class Piece extends Actor
     
     private void moveTo(Block target) {
         boolean hadPiece = target.currentPiece() != null;
+        GridWorld gw = (GridWorld) getWorld();
+        
+        // Handle en passant capture
+        if (type == PieceType.ROYAL_RECRUITS && gw != null) {
+            Block enPassantTarget = gw.getEnPassantTarget();
+            if (enPassantTarget != null && target == enPassantTarget) {
+                // This is an en passant capture - remove the captured pawn
+                Piece capturedPawn = gw.getEnPassantVulnerablePawn();
+                if (capturedPawn != null && capturedPawn.getCurrentBlock() != null) {
+                    capturedPawn.getCurrentBlock().removePiece(true);
+                }
+            }
+        }
+        
         target.removePiece(true);
+        
+        // Track two-square pawn moves for en passant
+        if (type == PieceType.ROYAL_RECRUITS && currentBlock != null && gw != null) {
+            int dx = target.getBoardX() - currentBlock.getBoardX();
+            if (Math.abs(dx) == 2) {
+                // Pawn moved two squares - set en passant target (the skipped square)
+                int direction = isWhite ? -1 : 1;
+                Block enPassantSquare = gw.getBlock(currentBlock.getBoardX() + direction, currentBlock.getBoardY());
+                gw.setEnPassant(enPassantSquare, this);
+                System.out.println("[En Passant] Set target at (" + enPassantSquare.getBoardX() + ", " + enPassantSquare.getBoardY() + ") for " + (isWhite ? "WHITE" : "BLACK") + " pawn");
+            }
+        }
         
         if (currentBlock != null) currentBlock.setPiece(null);
         
@@ -157,7 +183,17 @@ public class Piece extends Actor
                 boolean isFirstMove = (x == startRow);
     
                 if (pieceOnTarget == null) {
-                    if (dy != 0) return false;
+                    if (dy != 0) {
+                        // Check for en passant capture
+                        if (dx == direction && Math.abs(dy) == 1) {
+                            GridWorld world = (GridWorld) getWorld();
+                            Block enPassantTarget = world.getEnPassantTarget();
+                            if (enPassantTarget != null && targetBlock == enPassantTarget) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
                     if (dx == direction) return true;
                     if (isFirstMove && dx == 2 * direction) {
                         GridWorld world = (GridWorld) getWorld();
@@ -281,7 +317,6 @@ public class Piece extends Actor
         if (!Greenfoot.mouseClicked(null)) return;
         if (!isMyTurn()) return;
         
-        // Don't allow moves while promotion menu is active
         GridWorld gw = (GridWorld) getWorld();
         if (gw.isPromotionMenuActive()) return;
         
@@ -325,10 +360,9 @@ public class Piece extends Actor
                 else {
                     moveTo(selectedBlock);
                     
-                    // Check for pawn promotion
                     if (canPromote()) {
                         gw.showPromotionMenu(this);
-                        // Don't end turn yet - promotion menu will handle it
+                        deselect();
                     } else {
                         endTurn();
                     }
@@ -399,7 +433,13 @@ public class Piece extends Actor
                         else block.highlight(Color.RED);
                     } 
                     else {
-                        block.highlight(Color.GREEN); 
+                        // Check if this is an en passant capture (empty square but valid diagonal)
+                        Block enPassantTarget = world.getEnPassantTarget();
+                        if (type == PieceType.ROYAL_RECRUITS && enPassantTarget != null && block == enPassantTarget) {
+                            block.highlight(Color.RED); // Highlight en passant as a capture
+                        } else {
+                            block.highlight(Color.GREEN); 
+                        }
                     }
                     highlightedBlocks.add(block);
                 }

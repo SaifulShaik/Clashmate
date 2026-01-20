@@ -41,6 +41,10 @@ public class GridWorld extends World
     private Piece selectedPiece;
     private boolean promotionMenuActive;
     
+    // En passant tracking - stores the block that can be captured via en passant
+    private Block enPassantTarget;
+    private Piece enPassantVulnerablePawn;
+    
     /**
      * Constructor for objects of class MyWorld.
      * Loads settings from GameSettings configuration.
@@ -210,6 +214,21 @@ public class GridWorld extends World
     }
     
     public void endTurn(){
+        // Clear en passant opportunity BEFORE switching turns
+        // En passant must be done immediately after opponent's two-square pawn move
+        // So we clear it when the player who had the opportunity to capture ends their turn
+        if (enPassantVulnerablePawn != null) {
+            String currentPlayer = turnManager.getCurrentPlayer();
+            boolean enPassantPawnIsWhite = enPassantVulnerablePawn.checkIsWhite();
+            // If it's currently WHITE's turn and the vulnerable pawn is WHITE,
+            // that means BLACK just had their chance to capture and didn't. Clear it.
+            // (And vice versa)
+            if ((currentPlayer.equals("WHITE") && !enPassantPawnIsWhite) ||
+                (currentPlayer.equals("BLACK") && enPassantPawnIsWhite)) {
+                clearEnPassant();
+            }
+        }
+        
         turnManager.nextTurn();
         progressBombExplosions();
 
@@ -223,6 +242,41 @@ public class GridWorld extends World
         String currentPlayer = turnManager.getCurrentPlayer();
         whiteTimer.setActive(currentPlayer.equals("WHITE"));
         blackTimer.setActive(currentPlayer.equals("BLACK"));
+    }
+    
+    /**
+     * Set the en passant target block and vulnerable pawn.
+     * Called when a pawn moves two squares forward.
+     */
+    public void setEnPassant(Block target, Piece pawn) {
+        this.enPassantTarget = target;
+        this.enPassantVulnerablePawn = pawn;
+        System.out.println("[En Passant] Target set, pawn is " + (pawn.checkIsWhite() ? "WHITE" : "BLACK"));
+    }
+    
+    /**
+     * Clear the en passant opportunity.
+     */
+    public void clearEnPassant() {
+        if (enPassantTarget != null) {
+            System.out.println("[En Passant] Cleared");
+        }
+        this.enPassantTarget = null;
+        this.enPassantVulnerablePawn = null;
+    }
+    
+    /**
+     * Get the current en passant target block.
+     */
+    public Block getEnPassantTarget() {
+        return enPassantTarget;
+    }
+    
+    /**
+     * Get the pawn that is vulnerable to en passant capture.
+     */
+    public Piece getEnPassantVulnerablePawn() {
+        return enPassantVulnerablePawn;
     }
     
     private void layoutGrid() {
