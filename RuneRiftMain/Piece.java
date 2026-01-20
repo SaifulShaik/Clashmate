@@ -36,7 +36,7 @@ public class Piece extends Actor
             case KNIGHT: abilityCost = 3; break;
             case MUSKETEER: abilityCost = 2; break;
             case ROYAL_GIANT: abilityCost = 8; break;
-            case WITCH: abilityCost = 6; break;
+            case WITCH: abilityCost = 3; break;
             case ROYAL_RECRUITS: abilityCost = 1; break;
         }
         
@@ -273,6 +273,7 @@ public class Piece extends Actor
                     b.removePiece(true);
                     break;
                 }
+                else break;
             }
             cx += step;
         }
@@ -544,6 +545,17 @@ public class Piece extends Actor
         currentBlock = null;
         isSelected = false;
         clearHighlights();
+    }
+    
+    /**
+     * Removes this piece from the GridWorld's piece list.
+     * Should be called when this piece is captured/removed from the game.
+     */
+    public void removePieceFromList() {
+        GridWorld gw = (GridWorld) getWorld();
+        if (gw != null) {
+            gw.removePieceFromList(this);
+        }
     }
     
     public boolean checkIsWhite() {

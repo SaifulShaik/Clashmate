@@ -28,6 +28,9 @@ public class GridWorld extends World
     
     private List<Bomb> bombs;
     
+    private List<Piece> whitePieces;
+    private List<Piece> blackPieces;
+    
     // Game settings loaded from configuration
     private int elixirMultiplier;
     private int timeLimitSeconds;
@@ -87,65 +90,85 @@ public class GridWorld extends World
         turnManager = new TurnManager(elixirBarWhite, elixirBarBlack, elixirMultiplier);
         
         bombs = new ArrayList<>();
+        whitePieces = new ArrayList<>();
+        blackPieces = new ArrayList<>();
         
         // white pieces
         Piece wDarkPrince1 = new Piece(Piece.PieceType.DARK_PRINCE, blockGrid[7][0], true);
         addObject(wDarkPrince1, blockGrid[7][0].getX(), blockGrid[7][0].getY());
+        whitePieces.add(wDarkPrince1);
     
         Piece wDarkPrince2 = new Piece(Piece.PieceType.DARK_PRINCE, blockGrid[7][7], true);
         addObject(wDarkPrince2, blockGrid[7][7].getX(), blockGrid[7][7].getY());
+        whitePieces.add(wDarkPrince2);
         
         Piece wMusketeer1 = new Piece(Piece.PieceType.MUSKETEER, blockGrid[7][2], true);
         addObject(wMusketeer1, blockGrid[7][2].getX(), blockGrid[7][2].getY());
+        whitePieces.add(wMusketeer1);
 
         Piece wMusketeer2 = new Piece(Piece.PieceType.MUSKETEER, blockGrid[7][5], true);
         addObject(wMusketeer2, blockGrid[7][5].getX(), blockGrid[7][5].getY());
+        whitePieces.add(wMusketeer2);
         
         Piece wRoyalGiant = new Piece(Piece.PieceType.ROYAL_GIANT, blockGrid[7][4], true);
         addObject(wRoyalGiant, blockGrid[7][4].getX(), blockGrid[7][4].getY());
+        whitePieces.add(wRoyalGiant);
         
         Piece wWitch = new Piece(Piece.PieceType.WITCH, blockGrid[7][3], true);
         addObject(wWitch, blockGrid[7][3].getX(), blockGrid[7][3].getY());
+        whitePieces.add(wWitch);
         
         Piece wKnight1 = new Piece(Piece.PieceType.KNIGHT, blockGrid[7][1], true);
         addObject(wKnight1, blockGrid[7][1].getX(), blockGrid[7][1].getY());
+        whitePieces.add(wKnight1);
 
         Piece wKnight2 = new Piece(Piece.PieceType.KNIGHT, blockGrid[7][6], true);
         addObject(wKnight2, blockGrid[7][6].getX(), blockGrid[7][6].getY());
+        whitePieces.add(wKnight2);
 
         for (int i = 0; i < 8; i++) {
             Piece recruit = new Piece(Piece.PieceType.ROYAL_RECRUITS, blockGrid[6][i], true);
             addObject(recruit, blockGrid[6][i].getX(), blockGrid[6][i].getY());
+            whitePieces.add(recruit);
         }
         
         // black pieces
         Piece bDarkPrince1 = new Piece(Piece.PieceType.DARK_PRINCE, blockGrid[0][0], false);
         addObject(bDarkPrince1, blockGrid[0][0].getX(), blockGrid[0][0].getY());
+        blackPieces.add(bDarkPrince1);
         
         Piece bDarkPrince2 = new Piece(Piece.PieceType.DARK_PRINCE, blockGrid[0][7], false);
         addObject(bDarkPrince2, blockGrid[0][7].getX(), blockGrid[0][0].getY());
+        blackPieces.add(bDarkPrince2);
         
         Piece bMusketeer1 = new Piece(Piece.PieceType.MUSKETEER, blockGrid[0][2], false);
         addObject(bMusketeer1, blockGrid[0][2].getX(), blockGrid[0][2].getY());
+        blackPieces.add(bMusketeer1);
 
         Piece bMusketeer2 = new Piece(Piece.PieceType.MUSKETEER, blockGrid[0][5], false);
         addObject(bMusketeer2, blockGrid[0][5].getX(), blockGrid[0][5].getY());
+        blackPieces.add(bMusketeer2);
         
         Piece bRoyalGiant = new Piece(Piece.PieceType.ROYAL_GIANT, blockGrid[0][4], false);
         addObject(bRoyalGiant, blockGrid[0][4].getX(), blockGrid[0][4].getY());
+        blackPieces.add(bRoyalGiant);
         
         Piece bWitch = new Piece(Piece.PieceType.WITCH, blockGrid[0][3], false);
         addObject(bWitch, blockGrid[0][3].getX(), blockGrid[0][3].getY());
+        blackPieces.add(bWitch);
         
         Piece bKnight1 = new Piece(Piece.PieceType.KNIGHT, blockGrid[0][1], false);
         addObject(bKnight1, blockGrid[0][1].getX(), blockGrid[0][1].getY());
+        blackPieces.add(bKnight1);
         
         Piece bKnight2 = new Piece(Piece.PieceType.KNIGHT, blockGrid[0][6], false);
         addObject(bKnight2, blockGrid[0][6].getX(), blockGrid[0][6].getY());
+        blackPieces.add(bKnight2);
         
         for (int i = 0; i < 8; i++) {
             Piece recruit = new Piece(Piece.PieceType.ROYAL_RECRUITS, blockGrid[1][i], false);
             addObject(recruit, blockGrid[1][i].getX(), blockGrid[1][i].getY());
+            blackPieces.add(recruit);
         }
     }
     
@@ -153,10 +176,43 @@ public class GridWorld extends World
     {
         return turnManager;
     }
+
+    public void checkIfGameEnd() {
+        int whiteCount = whitePieces.size();
+        int blackCount = blackPieces.size();
+        
+        if (whiteCount == 0 || blackCount == 0) {
+            String winner = whiteCount > 0 ? "WHITE" : "BLACK";
+            endGame(winner + " wins!");
+        }
+        else if (whiteCount == 1 && blackCount == 1) {
+            endGame("Draw! Both players have 1 piece remaining.");
+        }
+    }
+    
+    public void removePieceFromList(Piece piece) {
+        if (piece.checkIsWhite()) {
+            whitePieces.remove(piece);
+        } 
+        else {
+            blackPieces.remove(piece);
+        }
+        System.out.println("Piece removed. White: " + whitePieces.size() + ", Black: " + blackPieces.size());
+        checkIfGameEnd();
+    }
+    
+    private void endGame(String message) {
+        System.out.println("Game Over! " + message);
+        whiteTimer.setActive(false);
+        blackTimer.setActive(false);
+        Greenfoot.stop();
+    }
     
     public void endTurn(){
         turnManager.nextTurn();
         progressBombExplosions();
+
+        checkIfGameEnd();
         
         // Hide ability cost displays when turn ends
         whiteCostDisplay.hide();

@@ -68,6 +68,11 @@ public class Block extends Actor
         piece = null;
         
         if (removeFromWorld) {
+            // Remove from GridWorld's piece list before removing from world
+            GridWorld gw = (GridWorld) getWorld();
+            if (gw != null) {
+                gw.removePieceFromList(p);
+            }
             getWorld().removeObject(p);
         }
         
