@@ -1,6 +1,7 @@
 import greenfoot.*;
 
 /**
+ * World that provides information on all the pieces as well as their abilities
  * 
  * @author Owen Lee & Saiful Shaik
  * @version
@@ -10,6 +11,9 @@ public class InfoWorld extends MenuWorld
     private DescriptionBox descriptionBox;
     private Button backButton;
     
+    /**
+     * Constructor for objects of class InfoWorld.
+     */
     public InfoWorld()
     {
         super(800, 600); // Custom width for piece display
@@ -56,6 +60,9 @@ public class InfoWorld extends MenuWorld
         setBackground(bg);
     }
     
+    /**
+     * Constantly checks for back button to see if user wants to return to landing page
+     */
     public void act()
     {
         // Click back button to return to LandingPage
@@ -65,6 +72,9 @@ public class InfoWorld extends MenuWorld
         }
     }
     
+    /**
+     * Creates the description boxes in InfoWorld that can be clicked to display information
+     */
     private void setupPieceImages()
     {
         // Row 1 - Top pieces
@@ -80,16 +90,21 @@ public class InfoWorld extends MenuWorld
         addObject(new PieceImage("WITCH", "BWitch.png"), 340, 405);
         addObject(new PieceImage("ROYAL_GIANT", "BRoyalGiant.png"), 480, 405);
         addObject(new PieceImage("SKELETON", "BSkeleton.png"), 620, 405);
-        
-       
-        
     }
     
+    /**
+     * Description box pops out and shows
+     * 
+     * @param pieceName tells the method which box was clicked and which display to pop out
+     */
     public void showDescription(String pieceName)
     {
         descriptionBox.showPiece(pieceName);
     }
     
+    /**
+     * Hides the description box
+     */
     public void hideDescription()
     {
         descriptionBox.hide();

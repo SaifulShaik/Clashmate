@@ -1,9 +1,24 @@
 import greenfoot.*;
-// ===== KNIGHT SLASH EFFECT =====
+
+/**
+ * The slash effect that appears when the knight uses its ability
+ * It rotates to indicate the tiles that are removed because of the sword
+ * 
+ * @author Owen
+ */
+
 public class KnightSlashEffect extends Effect
 {
     private int centerX, centerY;
     private boolean isWhite;
+    
+    /**
+     * Creates the slash effect based on 
+     * 
+     * @param x the x coordinate of the effect
+     * @param y the y coordinate of the effect
+     * @param isWhite used to determine the direction of the sword
+     */
     
     public KnightSlashEffect(int x, int y, boolean isWhite)
     {
@@ -28,7 +43,7 @@ public class KnightSlashEffect extends Effect
         // Create sword image
         GreenfootImage sword = new GreenfootImage(24, 100);
         
-        // === HANDLE ===
+        //CREATE THE HANDLE
         // Handle grip (brown leather)
         sword.setColor(new Color(101, 67, 33));
         sword.fillRect(8, 75, 8, 20);
@@ -39,19 +54,16 @@ public class KnightSlashEffect extends Effect
         sword.drawLine(8, 85, 16, 85);
         sword.drawLine(8, 90, 16, 90);
         
-        // Pommel (round knob at bottom)
         sword.setColor(new Color(255, 215, 0)); // Gold
         sword.fillOval(6, 93, 12, 7);
         
-        // === CROSSGUARD ===
         sword.setColor(new Color(255, 215, 0)); // Gold
         sword.fillRect(0, 70, 24, 6);
         
-        // Guard detail
         sword.setColor(new Color(218, 165, 32));
         sword.fillRect(2, 71, 20, 2);
         
-        // === BLADE ===
+        // CREATE THE BLADE
         // Main blade (silver)
         sword.setColor(new Color(230, 230, 240));
         sword.fillRect(7, 10, 10, 62);
@@ -69,7 +81,7 @@ public class KnightSlashEffect extends Effect
         sword.setColor(new Color(255, 255, 255, 220));
         sword.fillRect(9, 12, 2, 58);
         
-        // === BLADE TIP ===
+        //Blade tip
         sword.setColor(new Color(240, 240, 250));
         int[] xPoints = {9, 12, 15};
         int[] yPoints = {10, 3, 10};
@@ -81,7 +93,6 @@ public class KnightSlashEffect extends Effect
         int[] yPoints2 = {9, 4, 9};
         sword.fillPolygon(xPoints2, yPoints2, 3);
         
-        // === SLASH TRAILS ===
         // Golden slash trail
         sword.setColor(new Color(255, 215, 0, (int)(180 * (1 - progress * 0.4))));
         sword.fillRect(4, 10, 16, 65);
@@ -90,12 +101,11 @@ public class KnightSlashEffect extends Effect
         sword.setColor(new Color(255, 255, 255, (int)(150 * (1 - progress * 0.6))));
         sword.fillRect(7, 15, 10, 55);
         
-        // === ROTATION ===
         // Tilt during slash FIRST
         int tilt = (int)(slashProgress * 20);
         sword.rotate(tilt);
         
-        // THEN flip for black pieces (adds to the tilt)
+        // Flip for black piece
         if (!isWhite)
         {
             sword.rotate(180);

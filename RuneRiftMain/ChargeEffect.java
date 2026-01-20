@@ -1,9 +1,23 @@
 import greenfoot.*;
 
+/**
+ * The charge effect appears when the DarkPrince ability is used
+ * it is in a "+" shape that indicates the splash damage of the DarkPrince
+ * 
+ * @author Owen
+ */
+
 class ChargeEffect extends Effect
 {
     private int centerX, centerY;
     
+    /**
+     * Constructor for charge effect
+     * 
+     * @param x the x coordinate for the effect
+     * @param y the y coordinate for the effect
+     */
+
     public ChargeEffect(int x, int y)
     {
         this.centerX = x;

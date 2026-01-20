@@ -12,6 +12,9 @@ public class AbilityCostDisplay extends Actor
     private int cost = 0;
     private boolean isVisible = false;
     
+    /**
+     * Constructor for ability cost display
+     */
     public AbilityCostDisplay()
     {
         hide();
@@ -19,6 +22,8 @@ public class AbilityCostDisplay extends Actor
     
     /**
      * Show the ability cost for a piece
+     * 
+     * @param abilityCost   the cost of the ability that is taken to be displayed
      */
     public void showCost(int abilityCost)
     {
@@ -36,6 +41,9 @@ public class AbilityCostDisplay extends Actor
         setImage(new GreenfootImage(1, 1)); // Empty image
     }
     
+    /**
+     * updates display with the proper visibility and elixir cost
+     */
     private void updateDisplay()
     {
         if (!isVisible)

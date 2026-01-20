@@ -1,17 +1,32 @@
-import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+import greenfoot.*;  
+
+/**
+ * Bullet that appears after the musketeer ability
+ * Yellow bullet that moves forwards towards the opponenet
+ * 
+ * @author Owen
+ */
 
 public class SnipeEffect extends Effect
 {
     private int startX, startY;
     private int endX, endY;
     
+    /**
+     * Create the snipe effect based on start and end points to help the bullet move
+     * 
+     * @param startX initial x position
+     * @param startY initial y position
+     * @param endX final x position
+     * @param endY final y position
+     */
     public SnipeEffect(int startX, int startY, int endX, int endY)
     {
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
         this.endY = endY;
-        lifetime = 25; // Very quick
+        lifetime = 25; 
     }
     
     @Override

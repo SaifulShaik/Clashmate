@@ -1,5 +1,10 @@
 import greenfoot.*;
 
+/**
+ * 
+ * @author Owen
+ */
+
 public class SummonEffect extends Effect
 {
     private int centerX, centerY;

@@ -7,17 +7,24 @@ import greenfoot.*;
  * @author Owen Lee
  * @version
  */
-
 class DescriptionBox extends Actor
 {
     private boolean isVisible = false;
     private String currentPiece = "";
     
+    /**
+     * Constructor for description box
+     */
     public DescriptionBox()
     {
         createEmptyImage();
     }
     
+    /**
+     * The description box pops up for the specified character 
+     * 
+     * @param pieceName the name of the piece that should have its description visible
+     */
     public void showPiece(String pieceName)
     {
         isVisible = true;
@@ -25,6 +32,9 @@ class DescriptionBox extends Actor
         createDescriptionImage(pieceName);
     }
     
+    /**
+     * Hides description box
+     */
     public void hide()
     {
         isVisible = false;
@@ -32,15 +42,18 @@ class DescriptionBox extends Actor
         createEmptyImage();
     }
     
+    /**
+     * Tracks user clicks and mouse movement to see whether or not the user clicked 
+     * the X button to close the display
+     */
     public void act()
     {
-        // Click the X button to close
         if (isVisible && Greenfoot.mouseClicked(this))
         {
             MouseInfo mouse = Greenfoot.getMouseInfo();
             if (mouse != null)
             {
-                // Check if clicked on X button area (top right)
+                // Check if clicked on X button area
                 // Image is 400x400, so offset is 200 from center
                 int relativeX = mouse.getX() - (getX() - 200);
                 int relativeY = mouse.getY() - (getY() - 200);
@@ -59,6 +72,7 @@ class DescriptionBox extends Actor
         setImage(new GreenfootImage(1, 1));
     }
     
+    // creates the box the description is placed in
     private void createDescriptionImage(String pieceName)
     {
         GreenfootImage img = new GreenfootImage(400, 400);
@@ -98,7 +112,7 @@ class DescriptionBox extends Actor
     
     private String getDescription(String pieceName)
     {
-        // *** EDIT THESE DESCRIPTIONS FOR YOUR PIECES ***
+        // The description for pieces
         switch(pieceName)
         {
             case "DARK_PRINCE":
@@ -201,6 +215,7 @@ class DescriptionBox extends Actor
         }
     }
     
+    //allows the text to be split into multiple lines for formatting
     private void drawMultilineText(GreenfootImage img, String text, int x, int y, int maxWidth)
     {
         String[] lines = text.split("\n");
