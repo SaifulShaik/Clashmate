@@ -12,27 +12,61 @@ public class Piece extends Actor
 {
     public static enum PieceType { DARK_PRINCE, KNIGHT, MUSKETEER, ROYAL_GIANT, SKELETON, WITCH, ROYAL_RECRUITS }
     
+    // size of piece in pixels
+    public static final int size = 60;
+
+    // type of piece
     private PieceType type;
     private boolean isWhite;
+    
+    // location 
     private Block currentBlock;
+    
+    // piece selection
     private boolean isSelected;
+    
+    // used for checking if can castle
     private boolean hasMoved;
     
-    private boolean canMove;
-    
+    // things related to abilities
     private boolean abilityUsed;
     private int abilityState;
     private int abilityCost;
     
-    private boolean waitingForPromotion;  // True if Royal Recruit is at promotion row but canceled promotion
+    // tracks if a pawn (recruit) is at promotion row but canceled promotion
+    private boolean waitingForPromotion;  
 
+    // tracks highlighted blocks
     private List<Block> highlightedBlocks = new ArrayList<>();
     
+    /**
+     * Constructor for a Piece object
+     * 
+     * @param type the type of piece
+     * @param block starting block of the piece
+     * @param isWhite whether the piece is white (false means the piece is black)
+     */
     public Piece(PieceType type, Block block, boolean isWhite) {
         this.type = type;
         this.currentBlock = block;
         this.isWhite = isWhite;
         
+        // sets image and ability cost based on piece type
+        setAbilityCost();
+        setImage(type, isWhite);
+
+        // moves to the starting block
+        moveTo(currentBlock);
+        updateHitbox();
+
+        // has not moved yet
+        hasMoved = false;  
+    }
+
+    /**
+     * utility method to set the ability cost based on piece type
+     */
+    private void setAbilityCost() {
         switch(type) {
             case DARK_PRINCE: abilityCost = 5; break;
             case KNIGHT: abilityCost = 3; break;
@@ -40,32 +74,37 @@ public class Piece extends Actor
             case ROYAL_GIANT: abilityCost = 8; break;
             case WITCH: abilityCost = 3; break;
             case ROYAL_RECRUITS: abilityCost = 1; break;
+            case SKELETON: abilityCost = 0; break;
+            default: abilityCost = 0; break;
         }
-        
-        setImage(type, isWhite);
-        moveTo(currentBlock);
-        updateHitbox();
-
-        hasMoved = false;  
     }
     
+    /**
+     * check if it is currently this piece's turn
+     * @return true if it is this piece's turn, false otherwise
+     */
     private boolean isMyTurn()
     {
+        // gets the world's turn manager
         GridWorld world = (GridWorld) getWorld();
         TurnManager tm = world.getTurnManager();
     
+        // checks if it is the piece's turn based on color
         return isWhite ? tm.isPlayerTurn("WHITE") : tm.isPlayerTurn("BLACK");
     }
     
+    /**
+     * move this piece to a specified target block
+     * @param target the block to move to
+     */
     private void moveTo(Block target) {
         boolean hadPiece = target.currentPiece() != null;
         GridWorld gw = (GridWorld) getWorld();
         
-        // Handle en passant capture
+        // handle en passant capture
         if (type == PieceType.ROYAL_RECRUITS && gw != null) {
             Block enPassantTarget = gw.getEnPassantTarget();
             if (enPassantTarget != null && target == enPassantTarget) {
-                // This is an en passant capture - remove the captured pawn
                 Piece capturedPawn = gw.getEnPassantVulnerablePawn();
                 if (capturedPawn != null && capturedPawn.getCurrentBlock() != null) {
                     capturedPawn.getCurrentBlock().removePiece(true);
@@ -73,41 +112,56 @@ public class Piece extends Actor
             }
         }
         
+        // remove any piece on the target block
         target.removePiece(true);
         
-        // Track two-square pawn moves for en passant
+        // track two-square pawn moves for en passant
         if (type == PieceType.ROYAL_RECRUITS && currentBlock != null && gw != null) {
             int dx = target.getBoardX() - currentBlock.getBoardX();
             if (Math.abs(dx) == 2) {
-                // Pawn moved two squares - set en passant target (the skipped square)
                 int direction = isWhite ? -1 : 1;
                 Block enPassantSquare = gw.getBlock(currentBlock.getBoardX() + direction, currentBlock.getBoardY());
                 gw.setEnPassant(enPassantSquare, this);
-                System.out.println("[En Passant] Set target at (" + enPassantSquare.getBoardX() + ", " + enPassantSquare.getBoardY() + ") for " + (isWhite ? "WHITE" : "BLACK") + " pawn");
+                // System.out.println("[En Passant] Set target at (" + enPassantSquare.getBoardX() + ", " + enPassantSquare.getBoardY() + ") for " + (isWhite ? "WHITE" : "BLACK") + " pawn");
             }
         }
         
+        // remove the piece from the current block
         if (currentBlock != null) currentBlock.setPiece(null);
         
+        // royal recruit s spear strike effect if its ability is used
         if (type == PieceType.ROYAL_RECRUITS && abilityState == 1 && getWorld() != null) {
             SpearStrikeEffect spear = new SpearStrikeEffect(target.getX(), target.getY(), isWhite);
             getWorld().addObject(spear, target.getX(), target.getY());
             abilityState = 0;
         }
         
+        // updates location and 
         setLocation(target.getX(), target.getY());
+
+        // updates current block
         currentBlock = target;
+
+        // set this piece on the target block
         target.setPiece(this);
+
+        // mark as moved
         hasMoved = true;
 
+        // dark prince splash damage effect
         if (type == PieceType.DARK_PRINCE && abilityState == 1 && getWorld ()!= null && hadPiece) {
             getWorld().addObject(new ChargeEffect(currentBlock.getX(), currentBlock.getY()), currentBlock.getX(), currentBlock.getY());
             dealSplashDamage();
         }
         
+        // clear highlights after moving
         clearHighlights();
     }
     
+    /**
+     * deal splash damage to adjacent pieces in a + shape
+     * used by Dark Prince ability
+     */
     private void dealSplashDamage() {
         GridWorld gw = (GridWorld) getWorld();
             
@@ -130,9 +184,15 @@ public class Piece extends Actor
         if (block4 != null) {
             block4.removePiece(true);
         }
+
+        // reset ability state
         abilityState = 0;
     }
     
+    /**
+     * spawn skeleton pieces in adjacent blocks
+     * used by Witch ability
+     */
     private void spawnSkeletons() {
         GridWorld gw = (GridWorld) getWorld();
             
@@ -161,30 +221,38 @@ public class Piece extends Actor
         }
     }
     
+    /**
+     * check if a move to the target block is valid
+     * @param targetBlock
+     * @return true if the move is valid, false otherwise
+     */
     private boolean checkIfMoveIsValid(Block targetBlock) {
+        // checks for a piece on the target block
         Piece pieceOnTarget = targetBlock.currentPiece();
         
+        // cannot move if there is a piece of the same color on the target block
         if (pieceOnTarget != null && isWhite == pieceOnTarget.checkIsWhite()) return false;
         
+        // current location
         int x = currentBlock.getBoardX();
         int y = currentBlock.getBoardY();
         
+        // target location
         int targetX = targetBlock.getBoardX();
         int targetY = targetBlock.getBoardY();
         
+        // distance between current and target
         int dx = targetX - x; 
         int dy = targetY - y; 
         
+        // direction multiplier for forward movement
         int direction = isWhite ? -1 : 1;
     
         switch (type) {
             case ROYAL_RECRUITS:
-                int startRow = isWhite ? 6 : 1;
-                boolean isFirstMove = (x == startRow);
-    
                 if (pieceOnTarget == null) {
                     if (dy != 0) {
-                        // Check for en passant capture
+                        // check for en passant capture
                         if (dx == direction && Math.abs(dy) == 1) {
                             GridWorld world = (GridWorld) getWorld();
                             Block enPassantTarget = world.getEnPassantTarget();
@@ -195,18 +263,17 @@ public class Piece extends Actor
                         return false;
                     }
                     if (dx == direction) return true;
-                    if (isFirstMove && dx == 2 * direction) {
+                    // first move can move two squares
+                    if (!hasMoved && dx == 2 * direction) {
                         GridWorld world = (GridWorld) getWorld();
                         Block intermediate = world.getBlock(x + direction, y);
-                        if (intermediate.currentPiece() == null) return true;
-                        return false;
+                        return intermediate.currentPiece() == null;
                     }
                     return false;
                 } 
                 else {
                     if (dx == direction && Math.abs(dy) == 1) return true;
-                    if (dx == direction && dy == 0 && abilityUsed) return true;
-                    return false;
+                    return dx == direction && dy == 0 && abilityUsed;
                 }
     
             case DARK_PRINCE:
@@ -235,6 +302,7 @@ public class Piece extends Actor
                     GridWorld gw = (GridWorld) getWorld();
                     Block rookBlock = gw.getBlock(x, rookY);
                     
+                    // check for castling
                     if (rookBlock != null) {
                         Piece potentialRook = rookBlock.currentPiece();
             
@@ -242,33 +310,50 @@ public class Piece extends Actor
                             potentialRook.getType() == PieceType.DARK_PRINCE && 
                             !potentialRook.checkHasMoved() && 
                             isPathClear(x, y, x, rookY)) {
-                            System.out.println("[King] Can Castle");
+                            // System.out.println("[King] Can Castle");
                             return true;
                         }
                     }
                 }
+                // default movement
                 if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) return true;
                 return false;
     
             case KNIGHT:
-                return (Math.abs(dx) == 2 && Math.abs(dy) == 1) || (Math.abs(dx) == 1 && Math.abs(dy) == 2);
+                return (Math.abs(dx) == 2 && Math.abs(dy) == 1) || 
+                       (Math.abs(dx) == 1 && Math.abs(dy) == 2);
     
             case MUSKETEER:
                 if (Math.abs(dx) != Math.abs(dy)) return false;
                 return isPathClear(x, y, targetX, targetY);
         }
-    
         return false;
     }
     
+    /**
+     * Get the type of this piece
+     * @return the PieceType of this piece
+     */
     public PieceType getType() {
         return type;
     }
     
+    /**
+     * Check if this piece has moved
+     * @return true if the piece has moved, false otherwise
+     */
     public boolean checkHasMoved() {
         return hasMoved;
     }
     
+    /**
+     * check if the path between two blocks is clear (no pieces in between)
+     * @param startX starting block x
+     * @param startY starting block y
+     * @param endX ending block x
+     * @param endY ending block y
+     * @return true if the path is clear, false otherwise
+     */
     private boolean isPathClear(int startX, int startY, int endX, int endY) {
         GridWorld world = (GridWorld) getWorld();
         
@@ -278,16 +363,20 @@ public class Piece extends Actor
         int x = startX + dx;
         int y = startY + dy;
         
+        // check if any blocks in between the start and end are occupied
         while (x != endX || y != endY) {
             Block block = world.getBlock(x, y);
             if (block.currentPiece() != null) return false;
             x += dx;
             y += dy;
         }
-        
         return true;
     }
     
+    /**
+     * Perform the snipe ability 
+     * used by the musketeer
+     */
     private void snipe() {
         int x = currentBlock.getBoardX();
         int y = currentBlock.getBoardY();
@@ -300,6 +389,7 @@ public class Piece extends Actor
         
         int cx = x + step;
 
+        // keep going until hitting a piece or the edge of the board
         while (cx < gw.CELLS_TALL) {
             Block b = gw.getBlock(cx, y);
             if (b.currentPiece() != null) {
@@ -313,67 +403,94 @@ public class Piece extends Actor
         }
     }
 
+    /**
+     * handle piece movement based on mouse clicks
+     */
     private void move() {        
+        // cannot move if no mouse click
         if (!Greenfoot.mouseClicked(null)) return;
+
+        // cannot move if not this piece's turn
         if (!isMyTurn()) return;
         
         GridWorld gw = (GridWorld) getWorld();
+
+        // cannot move if promotion menu is active
         if (gw.isPromotionMenuActive()) return;
         
+        // cannot move if royal giant ability is active and waiting for target
         if (type == PieceType.ROYAL_GIANT && abilityState == 1) {
             if (!Greenfoot.mouseClicked(null)) return;
         }
         
+        // gets the mouse info
         MouseInfo mouse = Greenfoot.getMouseInfo();
         if (mouse == null) return;
         
         int mouseX = mouse.getX();
         int mouseY = mouse.getY();
         
+        // gets the currently selected block from the world location
         Block selectedBlock = ((GridWorld) getWorld()).worldToBlockPos(mouseX, mouseY);
         if (selectedBlock == null) return;
         
+        // logic if user clicks on the piece
         if (selectedBlock == currentBlock) {
             GridWorld world = (GridWorld)getWorld();
+            // deselect if already selected
             if (isSelected) {
                 deselect();
                 world.setSelectedPiece(null);
             } 
+            // select if not already selected
             else {
                 world.setSelectedPiece(this);
                 isSelected = true;
+
+                // updates hitbox and shows available moves
                 updateHitbox();
                 showPossibleMoves();
             }
         }
+        // logic if user clicks on a different block when piece is selected
         else if (isSelected) {
+            // handle royal giant explosion ability
             if (type == PieceType.ROYAL_GIANT && abilityState == 1) {
                 queueRoyalGiantExplosion(selectedBlock);
                 endTurn();
                 return;
             }
+            // check if the move is valid
             else if (checkIfMoveIsValid(selectedBlock)) {
+                // castling logic for royal giant (king)
                 if (type == PieceType.ROYAL_GIANT && Math.abs(selectedBlock.getBoardY() - currentBlock.getBoardY()) == 2) {
                     executeCastling(selectedBlock);
                     endTurn();
                 }
+                // move to target block
                 else {
                     moveTo(selectedBlock);
                     
+                    // show promotion menu if applicable
                     if (canPromote()) {
                         gw.showPromotionMenu(this);
                         deselect();
-                    } else {
-                        endTurn();
-                    }
+                    } 
+                    // end the turn
+                    else endTurn();
                 }
             }
         }
     }
     
+    /**
+     * execute castling move
+     * @param targetBlock the block the king is moving to
+     */
     private void executeCastling(Block targetBlock) {
         GridWorld gw = (GridWorld) getWorld();
         
+        // gets king and rook original and target positions
         int row = currentBlock.getBoardX();
         int kingOrigY = currentBlock.getBoardY();
         int kingTargY = targetBlock.getBoardY();
@@ -381,6 +498,7 @@ public class Piece extends Actor
         int rookOrigY = (kingTargY > kingOrigY) ? 7 : 0;
         int rookTargY = (kingTargY > kingOrigY) ? kingTargY - 1 : kingTargY + 1;
 
+        // move to target block
         moveTo(targetBlock);
     
         Block rookOrigBlock = gw.getBlock(row, rookOrigY);
@@ -388,42 +506,84 @@ public class Piece extends Actor
         Piece rook = rookOrigBlock.currentPiece();
         
         if (rook != null) {
-            rook.currentBlock.setPiece(null); 
+            // remove rook from starting block
+            rookOrigBlock.setPiece(null); 
+            
+            // move rook
             rook.setLocation(rookTargBlock.getX(), rookTargBlock.getY());
-            rook.currentBlock = rookTargBlock;
+
+            // update rook's current block
+            rook.setCurrentBlock(rookTargBlock);
+
+            // set rook on target block
             rookTargBlock.setPiece(rook);
+
+            // rook cannot castle again
             rook.hasMoved = true;
         }
     }
 
+    /**
+     * set the current block of this piece
+     * @param block the block to set as current
+     */
+    public void setCurrentBlock(Block block) {
+        this.currentBlock = block;
+    }
+
+    /**
+     * queue the royal giant explosion ability
+     * @param target the block to target for the explosion
+     */
     private void queueRoyalGiantExplosion(Block target) {
+        // reset ability state
         abilityState = 0;
+
         GridWorld gw = (GridWorld) getWorld();
+        // add bomb to the target block
         gw.addBomb(target, isWhite);
         
+        // clear the highlight block
         clearHighlights();
     }
     
+    /**
+     * end the turn for this piece's color
+     */
     private void endTurn() {
         ((GridWorld) getWorld()).endTurn();
+
+        // reset ability flag
         abilityUsed = false;
+
+        // deselect the piece
         deselect();
     }
     
+    /**
+     * show possible moves by highlighting valid blocks
+     */
     private void showPossibleMoves() {
         GridWorld world = (GridWorld) getWorld();
         
+        // first clear any existing highlights
         clearHighlights(); 
         
+        // iterate through all blocks to check for valid moves
         for (int x = 0; x < GridWorld.CELLS_TALL; x++) {
             for (int y = 0; y < GridWorld.CELLS_WIDE; y++) {
                 Block block = world.getBlock(x, y);
+
+                // safety check
                 if (block == null ) continue;
 
+                // all blocks can be targeted by royal giant ability
                 if (type == PieceType.ROYAL_GIANT && abilityState == 1) {
                     block.highlight(Color.ORANGE);
                     highlightedBlocks.add(block);
                 }
+
+                // highlight valid move blocks
                 else if (checkIfMoveIsValid(block)) {
                     Piece pieceOnTarget = block.currentPiece();
                     if (pieceOnTarget != null && pieceOnTarget.checkIsWhite() != this.isWhite) {
@@ -441,12 +601,16 @@ public class Piece extends Actor
                             block.highlight(Color.GREEN); 
                         }
                     }
+                    // add to highlighted blocks list
                     highlightedBlocks.add(block);
                 }
             }
         }
     }
 
+    /**
+     * clear all highlighted blocks
+     */
     private void clearHighlights() {
         for (Block block : highlightedBlocks) {
             block.clearHighlight(); 
@@ -454,14 +618,21 @@ public class Piece extends Actor
         highlightedBlocks.clear();
     }
     
+    /**
+     * deselect this piece and clear highlights
+     */
     public void deselect() {
         isSelected = false;
         clearHighlights();
         updateHitbox();
     }
     
+    /**
+     * set the image of the piece based on its type and color   
+     * @param type type of piece
+     * @param isWhite whether the piece is white
+     */
     private void setImage(PieceType type, boolean isWhite) {
-        int size = 60;
         switch (type) {
             case DARK_PRINCE:
                 if (isWhite) setImage("images/WDarkPrince.png");
@@ -492,21 +663,51 @@ public class Piece extends Actor
                 else setImage("images/BRoyalRecruits.png");
                 break;
         }
+        // scale to size
         getImage().scale(size, size);
     }
     
+    /**
+     * update the hitbox color based on selection and ability state
+     */
     private void updateHitbox() {
+        // orange if dark prince splash
         Color color = isSelected ? Color.GREEN : Color.RED;
         if (isSelected && abilityState == 1 && type == PieceType.DARK_PRINCE) {
             color = Color.ORANGE;
         }
+
         GreenfootImage img = getImage();
-        GreenfootImage hitboxImg = new GreenfootImage(img); // copy to avoid scaling issues
+
+        // copy to avoid scaling issues
+        GreenfootImage hitboxImg = new GreenfootImage(img); 
+
+        // draw hitbox
         hitboxImg.setColor(color);
         hitboxImg.drawRect(0, 0, img.getWidth()-1, img.getHeight()-1);
+
+        // update image
         setImage(hitboxImg);
     }
 
+    private void slash(GridWorld gw, int x, int y, int direction) {
+        Block block1 = gw.getBlock(x+direction, y-1);
+        if (block1 != null) {
+            block1.removePiece(true);
+        }
+        Block block2 = gw.getBlock(x+direction, y);
+        if (block2 != null) {
+            block2.removePiece(true);
+        }
+        Block block3 = gw.getBlock(x+direction, y+1);
+        if (block3 != null) {
+            block3.removePiece(true);
+        }
+    }
+
+    /**
+     * use this piece's ability
+     */
     public void useAbility() {
         abilityUsed = true;
         
@@ -522,19 +723,7 @@ public class Piece extends Actor
             case KNIGHT:
                 KnightSlashEffect slash = new KnightSlashEffect(getX(), getY(),isWhite);
                 gw.addObject(slash, getX(), getY());
-                
-                Block block1 = gw.getBlock(x+direction, y-1);
-                if (block1 != null) {
-                    block1.removePiece(true);
-                }
-                Block block2 = gw.getBlock(x+direction, y);
-                if (block2 != null) {
-                    block2.removePiece(true);
-                }
-                Block block3 = gw.getBlock(x+direction, y+1);
-                if (block3 != null) {
-                    block3.removePiece(true);
-                }
+                slash(gw, x, y, direction);
                 endTurn();
                 break;
                 
@@ -556,6 +745,8 @@ public class Piece extends Actor
             case MUSKETEER:
                 int cx = x + (isWhite ? -1 : 1);
                 Block targetBlock = null;
+
+                // add snipe animation bullet
                 while (cx >= 0 && cx < gw.CELLS_TALL) {
                     Block b = gw.getBlock(cx, y);
                     if (b.currentPiece() != null) {
@@ -583,7 +774,7 @@ public class Piece extends Actor
                 break;
                 
             case ROYAL_RECRUITS:
-                // If waiting for promotion, reopen the promotion menu
+                // if waiting for promotion, reopen the promotion menu
                 if (waitingForPromotion && canPromote()) {
                     gw.showPromotionMenu(this);
                 } else {
@@ -596,6 +787,9 @@ public class Piece extends Actor
         }
     }
     
+    /**
+     * clears the current block of this piece
+     */
     public void clearBlock() {
         currentBlock = null;
         isSelected = false;
@@ -603,8 +797,7 @@ public class Piece extends Actor
     }
     
     /**
-     * Removes this piece from the GridWorld's piece list.
-     * Should be called when this piece is captured/removed from the game.
+     * remove this piece from the global list of pieces
      */
     public void removePieceFromList() {
         GridWorld gw = (GridWorld) getWorld();
@@ -613,56 +806,70 @@ public class Piece extends Actor
         }
     }
     
+    /**
+     * check if this piece is white
+     * @return true if white, false if black
+     */
     public boolean checkIsWhite() {
         return isWhite;
     }
     
     /**
-     * Get the current block this piece is on
+     * get the current block this piece is on
      */
     public Block getCurrentBlock() {
         return currentBlock;
     }
     
     /**
-     * Check if this Royal Recruit has reached the promotion row
-     * White pieces promote at row 0, Black pieces promote at row 7
+     * check if the pawn can promote
+     * @return true if can promote, false otherwise
      */
     private boolean canPromote() {
         if (type != PieceType.ROYAL_RECRUITS) return false;
         if (currentBlock == null) return false;
         
         int row = currentBlock.getBoardX();
-        // White promotes at row 0 (top), Black promotes at row 7 (bottom)
+        
         return (isWhite && row == 0) || (!isWhite && row == 7);
     }
     
+    /**
+     * main act method called by Greenfoot framework
+     */
     public void act()
     {
         GridWorld gw = (GridWorld) getWorld();
         
+        // use ability if clicked
         if (isSelected && (!abilityUsed || abilityState == 0) && 
             gw.isButtonClicked(isWhite) && 
             gw.getElixir(isWhite) >= abilityCost) 
                 useAbility();
         
+        
+        // handle movement
         move();
     }
     
+    /**
+     * get the ability cost of this piece
+     * @return the ability cost
+     */
     public int getAbilityCost()
     {
         return abilityCost;
     }
     
     /**
-     * Set whether this piece is waiting for promotion
+     * set whether this piece is waiting for promotion
      */
     public void setWaitingForPromotion(boolean waiting) {
         this.waitingForPromotion = waiting;
     }
     
     /**
-     * Check if this piece is waiting for promotion
+     * check if this piece is waiting for promotion
      */
     public boolean isWaitingForPromotion() {
         return waitingForPromotion;

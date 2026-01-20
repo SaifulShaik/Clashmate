@@ -1,15 +1,17 @@
 import greenfoot.*;
 
 /**
- * Block code from class
+ * Block code from class, with new features
  * 
- * @author Jordan Cohen
+ * @author Jordan Cohen (edited by Joe Zhuo)
  * @version
  */
 public class Block extends Actor
 {
     private int xPos, yPos;
     private int worldX, worldY;
+
+    // piece on this block
     private Piece piece;
     
     GreenfootImage originalImage;
@@ -24,11 +26,6 @@ public class Block extends Actor
         drawCell();
         
         originalImage = getImage();
-    }
-
-    public void act()
-    {
-        // nothing here — block does not react to clicks
     }
 
     private void drawCell()
@@ -53,14 +50,26 @@ public class Block extends Actor
         setImage(highlightImg);
     }
     
+    /**
+     * get the piece currently on this block
+     * @return the piece on this block, or null if none
+     */
     public Piece currentPiece() {
         return piece;
     }
     
+    /** 
+     * set the piece on this block
+     * @param p the piece to place on this block
+     */
     public void setPiece(Piece p) {
         piece = p;
     }
     
+    /** 
+     * remove the piece from this block
+     * @param removeFromWorld true to also remove the piece from the world, false to just clear the block's reference
+     */
     public void removePiece(boolean removeFromWorld) {
         if (piece == null) return;
         
@@ -68,14 +77,14 @@ public class Block extends Actor
         piece = null;
         
         if (removeFromWorld) {
-            // Remove from GridWorld's piece list before removing from world
+            // remove from GridWorld's piece list before removing from world
             GridWorld gw = (GridWorld) getWorld();
-            if (gw != null) {
-                gw.removePieceFromList(p);
-            }
-            getWorld().removeObject(p);
+
+            if (gw != null) gw.removePieceFromList(p);
+            gw.removeObject(p);
         }
         
+        // clear block reference in piece
         p.clearBlock();
     }
     

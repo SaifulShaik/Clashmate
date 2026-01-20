@@ -11,29 +11,40 @@ import java.util.ArrayList;
 
 public class GridWorld extends World
 {
+    // size of the world
     public static final int SIZE = 60;
     public static final int CELLS_WIDE = 8;
     public static final int CELLS_TALL = 8;
     public static final int gridWidth = 480;
     public static final int gridHeight = 480;
     
+    // elixir bars
     private ElixirBar elixirBarWhite;
     private ElixirBar elixirBarBlack;
+
+    // turn manager
     private TurnManager turnManager;
+
+    // game timer
     private GameTimer whiteTimer;
     private GameTimer blackTimer;
-    //private EndTurnButton endTurnButton;
+
+    // ability buttons
     private Button blackAbilityButton;
     private Button whiteAbilityButton;
     
+    // list of bombs in the world
     private List<Bomb> bombs;
     
+    // global piece lists
     private List<Piece> whitePieces;
     private List<Piece> blackPieces;
     
     // Game settings loaded from configuration
     private int elixirMultiplier;
     private int timeLimitSeconds;
+
+    // elixir cost display
     private AbilityCostDisplay whiteCostDisplay;
     private AbilityCostDisplay blackCostDisplay;
 
@@ -41,7 +52,7 @@ public class GridWorld extends World
     private Piece selectedPiece;
     private boolean promotionMenuActive;
     
-    // En passant tracking - stores the block that can be captured via en passant
+    // en passant tracking - stores the block that can be captured via en passant
     private Block enPassantTarget;
     private Piece enPassantVulnerablePawn;
     
@@ -66,34 +77,31 @@ public class GridWorld extends World
         // add elixir bars (start with 0 elixir - gain is at end of turn)
         elixirBarWhite = new ElixirBar();
         addObject(elixirBarWhite, 120, 575);
-        
         elixirBarBlack = new ElixirBar();
         addObject(elixirBarBlack, 120, 25);
         
         // Create separate timers with loaded time limit
         whiteTimer = new GameTimer("WHITE", timeLimitSeconds);
         addObject(whiteTimer, 330, 575);
-        
         blackTimer = new GameTimer("BLACK", timeLimitSeconds);
         addObject(blackTimer, 330, 25); 
-        
         whiteTimer.setActive(true);
         blackTimer.setActive(false);
         
+        // adds ability button and cost displays
         blackAbilityButton = new Button("Use ability", 120, 40);
         addObject(blackAbilityButton, 500, 25);
-        
         blackCostDisplay = new AbilityCostDisplay();
         addObject(blackCostDisplay, 580, 25);
-        
         whiteAbilityButton = new Button("Use ability", 120, 40);
         addObject(whiteAbilityButton, 500, 575);
-        
         whiteCostDisplay = new AbilityCostDisplay();
         addObject(whiteCostDisplay, 580, 575);
         
+        // turn manager
         turnManager = new TurnManager(elixirBarWhite, elixirBarBlack, elixirMultiplier);
         
+        // initialize piece and bomb lists
         bombs = new ArrayList<>();
         whitePieces = new ArrayList<>();
         blackPieces = new ArrayList<>();
@@ -178,9 +186,8 @@ public class GridWorld extends World
     }
     
     /**
-     * Gets the TurnManager
-     *
-     * @return  TurnManager
+     * get the turn manager
+     * @return the TurnManager instance
      */
     public TurnManager getTurnManager()
     {
@@ -188,25 +195,26 @@ public class GridWorld extends World
     }
 
     /**
-     * Checks whether or not the game ended, and displays the end message
+     * check if the game has ended due to win/loss/draw conditions
      */
     public void checkIfGameEnd() {
         int whiteCount = whitePieces.size();
         int blackCount = blackPieces.size();
         
+        // check win/loss conditions
         if (whiteCount == 0 || blackCount == 0) {
             String winner = whiteCount > 0 ? "WHITE" : "BLACK";
             endGame(winner + " wins!");
         }
+        // draw condition: both players have only 1 piece remaining
         else if (whiteCount == 1 && blackCount == 1) {
             endGame("Draw! Both players have 1 piece remaining.");
         }
     }
     
     /**
-     * Takes out a piece from the list of pieces a player has
-     * 
-     * @param piece the piece that should be removed from the list
+     * remove a piece from the appropriate piece list
+     * @param piece the piece to remove
      */
     public void removePieceFromList(Piece piece) {
         if (piece.checkIsWhite()) {
@@ -215,14 +223,13 @@ public class GridWorld extends World
         else {
             blackPieces.remove(piece);
         }
-        System.out.println("Piece removed. White: " + whitePieces.size() + ", Black: " + blackPieces.size());
+        //System.out.println("Piece removed. White: " + whitePieces.size() + ", Black: " + blackPieces.size());
         checkIfGameEnd();
     }
     
     /**
-     * Displays the message to indicate the game ending
-     * 
-     * @param message   the message that is printed
+     * end the game with a message
+     * @param message the message to display
      */
     private void endGame(String message) {
         System.out.println("Game Over! " + message);
@@ -232,18 +239,15 @@ public class GridWorld extends World
     }
     
     /**
-     * Used every time a turn ends to manage game logic
+     * End the current player's turn, switch to the next player,
+     * progress bomb explosions, and check for game end conditions.
+     * clears en passant if applicable.
      */
     public void endTurn(){
-        // Clear en passant opportunity BEFORE switching turns
-        // En passant must be done immediately after opponent's two-square pawn move
-        // So we clear it when the player who had the opportunity to capture ends their turn
         if (enPassantVulnerablePawn != null) {
             String currentPlayer = turnManager.getCurrentPlayer();
             boolean enPassantPawnIsWhite = enPassantVulnerablePawn.checkIsWhite();
-            // If it's currently WHITE's turn and the vulnerable pawn is WHITE,
-            // that means BLACK just had their chance to capture and didn't. Clear it.
-            // (And vice versa)
+
             if ((currentPlayer.equals("WHITE") && !enPassantPawnIsWhite) ||
                 (currentPlayer.equals("BLACK") && enPassantPawnIsWhite)) {
                 clearEnPassant();
@@ -255,11 +259,11 @@ public class GridWorld extends World
 
         checkIfGameEnd();
         
-        // Hide ability cost displays when turn ends
+        // hide ability cost displays when turn ends
         whiteCostDisplay.hide();
         blackCostDisplay.hide();
         
-        // Switch which timer is active based on current player
+        // switch which timer is active based on current player
         String currentPlayer = turnManager.getCurrentPlayer();
         whiteTimer.setActive(currentPlayer.equals("WHITE"));
         blackTimer.setActive(currentPlayer.equals("BLACK"));
@@ -272,16 +276,13 @@ public class GridWorld extends World
     public void setEnPassant(Block target, Piece pawn) {
         this.enPassantTarget = target;
         this.enPassantVulnerablePawn = pawn;
-        System.out.println("[En Passant] Target set, pawn is " + (pawn.checkIsWhite() ? "WHITE" : "BLACK"));
+        //System.out.println("[En Passant] Target set, pawn is " + (pawn.checkIsWhite() ? "WHITE" : "BLACK"));
     }
     
     /**
      * Clear the en passant opportunity.
      */
     public void clearEnPassant() {
-        if (enPassantTarget != null) {
-            System.out.println("[En Passant] Cleared");
-        }
         this.enPassantTarget = null;
         this.enPassantVulnerablePawn = null;
     }
@@ -301,7 +302,7 @@ public class GridWorld extends World
     }
     
     /**
-     * Creates the main board using 2D array
+     * Layout the grid by creating Block objects and adding them to the world.
      */
     private void layoutGrid() {
         for (int i = 0; i < blockGrid.length; i++){
@@ -316,12 +317,10 @@ public class GridWorld extends World
     }
     
     /**
-     * Determines the block based on coordinates in the world
-     * 
-     * @param worldX X  position in the world
-     * @param worldY Y  position in the world
-     * 
-     * @return Block    provides the row and column of the block
+     * convert world coordinates to the corresponding Block position.
+     * @param worldX the x-coordinate in the world.
+     * @param worldY the y-coordinate in the world.
+     * @return the block at the given world coordinates, or null if out of bounds.
      */
     public Block worldToBlockPos(int worldX, int worldY) {
         if (worldX > 540 || worldX < 60 || worldY > 540 || worldY < 60) return null;
@@ -332,20 +331,15 @@ public class GridWorld extends World
         int col = (worldX - startX) / SIZE;
         int row = (worldY - startY) / SIZE;
     
-        if (row < 0 || row >= CELLS_TALL || col < 0 || col >= CELLS_WIDE)
-        {
-            return null;
-        }
-    
+        if (row < 0 || row >= CELLS_TALL || col < 0 || col >= CELLS_WIDE) return null;
+
         return blockGrid[row][col];
     }
     
     /**
-     * Adds a bomb to a specific location on the board
-     * 
-     * @param location  coordinates of the block
-     * @param isWhite   true if the bomb is the white players, false if it belongs to the black player
-     * 
+     * Add a bomb to the world at the specified location.
+     * @param location the block where the bomb will be placed.
+     * @param isWhite true if the bomb belongs to the white player, false for black.
      */
     public void addBomb(Block location, boolean isWhite) {
         Bomb bomb = new Bomb(location, isWhite);
@@ -354,7 +348,7 @@ public class GridWorld extends World
     }
     
     /**
-     * calls progress explosion for all bombs in order to lower their countdown
+     * Progress the explosion timers for all bombs in the world.
      */
     private void progressBombExplosions() {
         for (Bomb b : bombs) {
@@ -363,12 +357,10 @@ public class GridWorld extends World
     }
     
     /**
-     * Returns the block located at the specified grid coordinates
-     * 
-     * @param x row index
-     * @param y column index
-     * 
-     * @return Block    the block at given coordinate, or null if no block  
+     * Get the block at the specified grid coordinates.
+     * @param x the row index.
+     * @param y the column index.
+     * @return the Block at the specified coordinates, or null if out of bounds.
      */
     public Block getBlock(int x, int y) {
         if (x >= CELLS_TALL || y >= CELLS_WIDE || x < 0 || y < 0) return null;
@@ -376,51 +368,43 @@ public class GridWorld extends World
     }
     
     /**
-     * retrieves the piece selected 
-     * 
-     * @return Piece the piece that was selected
+     * get the currently selected piece
+     * @return the selected Piece, or null if none is selected.
      */
     public Piece getSelectedPiece() {
         return selectedPiece;
     }
     
     /**
-     * Determines whether or not the ability button was clicked
-     * 
-     * @param isWhite true to check the white player’s button, false for the black player
-     * 
-     * @return boolean true if ability button was clicked
+     * check if the ability button for the specified player was clicked
+     * @param isWhite true for white player, false for black player
+     * @return true if the button was clicked, false otherwise
      */
     public boolean isButtonClicked(boolean isWhite) {
         return isWhite ? whiteAbilityButton.wasClicked() : blackAbilityButton.wasClicked();
     }
     
     /**
-     * Determines how much elixir a player has
-     * 
-     * @param isWhite true to check the white player’s elixir, false for the black player
-     * 
-     * @return int  how much elixir the specified player has
+     * get the current elixir amount for the specified player
+     * @param isWhite true for white player, false for black player
+     * @return the current elixir amount
      */
     public int getElixir(boolean isWhite) {
         return isWhite ? elixirBarWhite.getElixir() : elixirBarBlack.getElixir();
     }
     
     /**
-     * Removes elixir from a player
-     * 
-     * @param isWhite   true to remove white players, false for the black player
-     * @param amount    the amount of elixir you want to remove
+     * remove elixir from the specified player
+     * @param isWhite true for white player, false for black player
      */
     public void removeElixir(boolean isWhite, int amount) {
-        if (isWhite) elixirBarWhite.removeElixir(amount);
+        if (isWhite) elixirBarWhite.removeElixir(amount);  
         else elixirBarBlack.removeElixir(amount);
     }
     
     /**
-     * Determines which piece is selected to display the proper information on the board
-     * 
-     * @param piece  the piece that is selected
+     * set the currently selected piece
+     * @param piece the Piece to select, or null to deselect
      */
     public void setSelectedPiece(Piece piece) {
         if (selectedPiece != null && selectedPiece != piece) {
@@ -428,26 +412,20 @@ public class GridWorld extends World
         }
         selectedPiece = piece;
         
-        //hide or show ability cost
+        // hide or show ability cost
         whiteCostDisplay.hide();
         blackCostDisplay.hide();
         
         if (piece != null)
         {
-            if (piece.checkIsWhite())
-            {
-                whiteCostDisplay.showCost(piece.getAbilityCost());
-            }
-            else
-            {
-                blackCostDisplay.showCost(piece.getAbilityCost());
-            }
+            if (piece.checkIsWhite()) whiteCostDisplay.showCost(piece.getAbilityCost());
+            else blackCostDisplay.showCost(piece.getAbilityCost()); 
         }
     }
     
     /**
-     * Load game settings from configuration file.
-     * Falls back to defaults if settings are missing.
+     * load game settings from configuration file.
+     * falls back to defaults if settings are missing.
      */
     private void loadGameSettings()
     {
@@ -456,13 +434,12 @@ public class GridWorld extends World
         timeLimitSeconds = settings.getTimeSeconds();
         
         // Log loaded settings for debugging
-        System.out.println("Game starting with settings: " + settings);
+        // System.out.println("Game starting with settings: " + settings);
     }
     
     /**
-     * Get the current elixir multiplier setting
-     * 
-     * @return int the elixir multipler
+     * get the current elixir multiplier setting
+     * @return the elixir multiplier
      */
     public int getElixirMultiplier()
     {
@@ -470,9 +447,8 @@ public class GridWorld extends World
     }
     
     /**
-     * Get the time limit
-     * 
-     * @return int time limit in seconds
+     * get the time limit in seconds
+     * @return the time limit in seconds
      */
     public int getTimeLimitSeconds()
     {
@@ -481,8 +457,7 @@ public class GridWorld extends World
     
     /**
      * Get the list of white pieces
-     * 
-     * @return List<piece> the list of all pieces white has
+     * @return the list of white pieces
      */
     public List<Piece> getWhitePieces()
     {
@@ -511,8 +486,7 @@ public class GridWorld extends World
     
     /**
      * Set whether a promotion menu is active
-     * 
-     * @param active    whether or not the promotion menu should be active
+     * @param active whether or not the promotion menu should be active
      */
     public void setPromotionMenuActive(boolean active)
     {
@@ -520,9 +494,8 @@ public class GridWorld extends World
     }
     
     /**
-     * Show the promotion menu for a piece that reached the end
-     * 
-     * @param piece the piece that has reached the end and is eligible for promotion
+     * Show the promotion menu for a piece that reached the end of the board
+     * @param piece the Piece to promote
      */
     public void showPromotionMenu(Piece piece)
     {
