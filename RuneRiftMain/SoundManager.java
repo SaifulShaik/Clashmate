@@ -16,10 +16,11 @@ public class SoundManager
     public static final String CLICK = "click.mp3";
     public static final String MOVE = "move.mp3";
     public static final String SELECT = "select.mp3";
-    public static final String WIN = "win.mp3";
-    public static final String LOSE = "lose.mp3";
+    public static final String LOSE = "draw.mp3";
     public static final String START = "start.mp3";
-    public static final String MUSIC_MENU = "menu_music.mp3";
+    public static final String MUSIC_MENU = "menu_music1.mp3";
+    public static final String MUSIC_MENU = "menu_music2.mp3";
+    public static final String MUSIC_MENU = "menu_music3.mp3";
     
     // Volume control
     private boolean soundEnabled = true;
