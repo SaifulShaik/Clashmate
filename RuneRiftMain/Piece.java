@@ -31,8 +31,6 @@ public class Piece extends Actor
         this.currentBlock = block;
         this.isWhite = isWhite;
         
-        hasMoved = false;
-        
         switch(type) {
             case DARK_PRINCE: abilityCost = 5; break;
             case KNIGHT: abilityCost = 3; break;
@@ -45,6 +43,8 @@ public class Piece extends Actor
         setImage(type, isWhite);
         moveTo(currentBlock);
         updateHitbox();
+
+        hasMoved = false;  
     }
     
     private boolean isMyTurn()
@@ -56,8 +56,6 @@ public class Piece extends Actor
     }
     
     private void moveTo(Block target) {
-        hasMoved = true;
-        
         target.removePiece(true);
         
         if (currentBlock != null) currentBlock.setPiece(null);
@@ -77,6 +75,7 @@ public class Piece extends Actor
         setLocation(target.getX(), target.getY());
         currentBlock = target;
         target.setPiece(this);
+        hasMoved = true;
         
         if (abilityState == 1 && type == PieceType.DARK_PRINCE) {
             dealSplashDamage();
@@ -209,6 +208,7 @@ public class Piece extends Actor
                             potentialRook.getType() == PieceType.DARK_PRINCE && 
                             !potentialRook.checkHasMoved() && 
                             isPathClear(x, y, x, rookY)) {
+                            System.out.println("[King] Can Castle");
                             return true;
                         }
                     }
@@ -300,7 +300,8 @@ public class Piece extends Actor
             if (isSelected) {
                 deselect();
                 world.setSelectedPiece(null);
-            } else {
+            } 
+            else {
                 world.setSelectedPiece(this);
                 isSelected = true;
                 updateHitbox();
@@ -308,17 +309,18 @@ public class Piece extends Actor
             }
         }
         else if (isSelected) {
-            if (type == PieceType.ROYAL_GIANT && Math.abs(selectedBlock.getBoardY() - currentBlock.getBoardY()) == 2) {
-                executeCastling(selectedBlock);
-                endTurn();
-            }
-            else if (type == PieceType.ROYAL_GIANT && abilityState == 1) {
+            if (type == PieceType.ROYAL_GIANT && abilityState == 1) {
                 queueRoyalGiantExplosion(selectedBlock);
                 endTurn();
                 return;
             }
             else if (checkIfMoveIsValid(selectedBlock)) {
-                moveTo(selectedBlock);
+                if (type == PieceType.ROYAL_GIANT && Math.abs(selectedBlock.getBoardY() - currentBlock.getBoardY()) == 2) {
+                    executeCastling(selectedBlock);
+                }
+                else {
+                    moveTo(selectedBlock);
+                }
                 endTurn();
             }
         }
@@ -326,6 +328,7 @@ public class Piece extends Actor
     
     private void executeCastling(Block targetBlock) {
         GridWorld gw = (GridWorld) getWorld();
+        
         int row = currentBlock.getBoardX();
         int kingOrigY = currentBlock.getBoardY();
         int kingTargY = targetBlock.getBoardY();
@@ -383,7 +386,8 @@ public class Piece extends Actor
                             block.highlight(Color.ORANGE);
                         }
                         else block.highlight(Color.RED);
-                    } else {
+                    } 
+                    else {
                         block.highlight(Color.GREEN); 
                     }
                     highlightedBlocks.add(block);
