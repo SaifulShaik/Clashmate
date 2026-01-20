@@ -94,6 +94,7 @@ public class GameTimer extends Actor
     
     private void checkTimeOut()
     {
+        SoundManager.getInstance().playLose();
         Greenfoot.stop();
         
         // Show game over message

@@ -56,6 +56,10 @@ public class GridWorld extends World
     private Block enPassantTarget;
     private Piece enPassantVulnerablePawn;
     
+    // Fade-in effect
+    private FadeOverlay fadeOverlay;
+    private boolean gameStarted = false;
+    
     /**
      * Constructor for objects of class MyWorld.
      * Loads settings from GameSettings configuration.
@@ -85,7 +89,9 @@ public class GridWorld extends World
         addObject(whiteTimer, 330, 575);
         blackTimer = new GameTimer("BLACK", timeLimitSeconds);
         addObject(blackTimer, 330, 25); 
-        whiteTimer.setActive(true);
+        
+        // Keep timers inactive until loading is complete
+        whiteTimer.setActive(false);
         blackTimer.setActive(false);
         
         // adds ability button and cost displays
@@ -182,6 +188,24 @@ public class GridWorld extends World
             Piece recruit = new Piece(Piece.PieceType.ROYAL_RECRUITS, blockGrid[1][i], false);
             addObject(recruit, blockGrid[1][i].getX(), blockGrid[1][i].getY());
             blackPieces.add(recruit);
+        }
+        
+        // Add fade overlay on top of everything and play start sound
+        fadeOverlay = new FadeOverlay(600, 600);
+        addObject(fadeOverlay, 300, 300);
+        SoundManager.getInstance().playStart();
+    }
+    
+    /**
+     * Act method - checks if loading is complete to start the game
+     */
+    public void act()
+    {
+        // Start the game once fade animation is complete
+        if (!gameStarted && fadeOverlay != null && fadeOverlay.isFadeComplete())
+        {
+            gameStarted = true;
+            whiteTimer.setActive(true); // White goes first
         }
     }
     

@@ -137,6 +137,12 @@ public class Piece extends Actor
         }
         
         // updates location and 
+        if (type == PieceType.DARK_PRINCE && abilityState == 1 && getWorld ()!= null) {
+            // We spawn it at the TARGET location because that is where we land
+            getWorld().addObject(new ChargeEffect(target.getX(), target.getY()), target.getX(), target.getY());
+        }
+        
+        SoundManager.getInstance().playMove();
         setLocation(target.getX(), target.getY());
 
         // updates current block
@@ -444,6 +450,7 @@ public class Piece extends Actor
             } 
             // select if not already selected
             else {
+                SoundManager.getInstance().playSelect();
                 world.setSelectedPiece(this);
                 isSelected = true;
 

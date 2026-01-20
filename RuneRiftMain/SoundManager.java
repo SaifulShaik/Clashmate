@@ -43,6 +43,7 @@ public class SoundManager
      */
     private SoundManager()
     {
+        
     }
     
     /**
@@ -109,7 +110,8 @@ public class SoundManager
      */
     public void playMove()
     {
-        play(MOVE);
+        //if() {}
+        //play(MOVE);
     }
     
     /**
@@ -126,6 +128,14 @@ public class SoundManager
     public void playStart()
     {
         play(START);
+    }
+    
+    /**
+     * Play the lose/draw sound (when game ends)
+     */
+    public void playLose()
+    {
+        play(LOSE);
     }
     
     /**

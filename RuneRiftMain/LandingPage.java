@@ -149,7 +149,7 @@ public class LandingPage extends MenuWorld
         addObject(subtitleLabel, 300, titleY + 70);
         
         // Create play button
-        playButton = new Button("START GAME", 220, 65, 
+        playButton = new Button("PLAY", 220, 65, 
                                 new Color(34, 139, 34), 
                                 new Color(50, 205, 50), 
                                 Color.WHITE, 28);

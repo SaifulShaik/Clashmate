@@ -297,7 +297,7 @@ public class EditorWorld extends MenuWorld
         {
             goToLandingPage();
         }
-        else if (startButton.wasClicked())
+        else if (Greenfoot.mouseClicked(startButton))
         {
             startGame();
         }
@@ -388,7 +388,9 @@ public class EditorWorld extends MenuWorld
         // Save settings to file
         saveSettings();
         
-        SoundManager.getInstance().playStart();
+        // Stop menu music before transitioning
+        SoundManager.getInstance().stopMenuMusic();
+        
         // GridWorld will load settings from GameSettings
         Greenfoot.setWorld(new GridWorld());
     }
