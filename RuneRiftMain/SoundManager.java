@@ -15,9 +15,7 @@ public class SoundManager
     // Sound file names
     public static final String CLICK = "click.mp3";
     public static final String MOVE = "move.mp3";
-    public static final String CAPTURE = "capture.mp3";
     public static final String SELECT = "select.mp3";
-    public static final String ERROR = "error.mp3";
     public static final String WIN = "win.mp3";
     public static final String LOSE = "lose.mp3";
     public static final String START = "start.mp3";
@@ -104,27 +102,11 @@ public class SoundManager
     }
     
     /**
-     * Play the capture sound (when capturing a piece)
-     */
-    public void playCapture()
-    {
-        play(CAPTURE);
-    }
-    
-    /**
      * Play the select sound (when selecting a piece)
      */
     public void playSelect()
     {
         play(SELECT);
-    }
-    
-    /**
-     * Play the error sound (for invalid actions)
-     */
-    public void playError()
-    {
-        play(ERROR);
     }
     
     /**
