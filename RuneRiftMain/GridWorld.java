@@ -217,6 +217,15 @@ public class GridWorld extends World
     {
         return turnManager;
     }
+    
+    /**
+     * Check if the game has started (fade animation complete)
+     * @return true if game has started and pieces can be moved
+     */
+    public boolean isGameStarted()
+    {
+        return gameStarted;
+    }
 
     /**
      * check if the game has ended due to win/loss/draw conditions
@@ -268,6 +277,9 @@ public class GridWorld extends World
      * clears en passant if applicable.
      */
     public void endTurn(){
+        // Don't allow ending turn if game hasn't started
+        if (!gameStarted) return;
+        
         if (enPassantVulnerablePawn != null) {
             String currentPlayer = turnManager.getCurrentPlayer();
             boolean enPassantPawnIsWhite = enPassantVulnerablePawn.checkIsWhite();

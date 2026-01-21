@@ -415,11 +415,14 @@ public class Piece extends Actor
     private void move() {        
         // cannot move if no mouse click
         if (!Greenfoot.mouseClicked(null)) return;
+        
+        GridWorld gw = (GridWorld) getWorld();
+        
+        // cannot move if game hasn't started (still loading/fading)
+        if (!gw.isGameStarted()) return;
 
         // cannot move if not this piece's turn
         if (!isMyTurn()) return;
-        
-        GridWorld gw = (GridWorld) getWorld();
 
         // cannot move if promotion menu is active
         if (gw.isPromotionMenuActive()) return;
