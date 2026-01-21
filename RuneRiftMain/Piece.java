@@ -3,14 +3,27 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Write a description of class Piece here.
+ * Piece class
+ * Represents a piece on the board
+ * handles ability usage, movement, and piece taking
+ * 
+ * all images are from clash royale
  * 
  * @author Joe Zhuo 
  * @version 1/13/2026
  */
 public class Piece extends Actor
 {
-    public static enum PieceType { DARK_PRINCE, KNIGHT, MUSKETEER, ROYAL_GIANT, SKELETON, WITCH, ROYAL_RECRUITS }
+    // piece types
+    public static enum PieceType { 
+        DARK_PRINCE, 
+        KNIGHT, 
+        MUSKETEER, 
+        ROYAL_GIANT, 
+        SKELETON, 
+        WITCH, 
+        ROYAL_RECRUITS 
+    }
     
     // size of piece in pixels
     public static final int size = 60;
