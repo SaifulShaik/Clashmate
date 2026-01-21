@@ -16,8 +16,8 @@ public class FadeOverlay extends Actor
     private int animationFrame;
     private int width;
     private int height;
-    private static final int FRAMES_PER_SECOND = 60;
-    private static final int DELAY_SECONDS = 3;
+    private static final int FRAMES_PER_SECOND = 30;
+    private static final int DELAY_SECONDS = 1;
     private static final int NUM_DOTS = 8;
     private static final int DOT_RADIUS = 8;
     private static final int CIRCLE_RADIUS = 40;

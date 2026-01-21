@@ -35,6 +35,7 @@ public class Bomb extends Actor
     protected void addedToWorld(World world)
     {
         world.addObject(turnsLabel, getX(), getY());
+        SoundManager.getInstance().play(SoundManager.BOMB_PLANTED);
     }
     
     /**
@@ -46,6 +47,7 @@ public class Bomb extends Actor
         turnsLabel.setLocation(getX(), getY());
 
         if (turnCount == 0) explode();
+        
     }
     
     /**
@@ -75,6 +77,8 @@ public class Bomb extends Actor
                 }
             }
         }
+        
+        SoundManager.getInstance().play(SoundManager.BOMB);
         
         // remove label and this object from the world
         gw.removeObject(turnsLabel);

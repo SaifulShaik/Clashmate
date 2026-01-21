@@ -23,6 +23,8 @@ class ChargeEffect extends Effect
         this.centerX = x;
         this.centerY = y;
         this.lifetime = 25; 
+        
+        SoundManager.getInstance().play(SoundManager.DARK_PRINCE);
     }
     
     @Override

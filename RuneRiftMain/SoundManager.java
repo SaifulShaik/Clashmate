@@ -18,19 +18,14 @@ public class SoundManager
     public static final String SELECT = "select.mp3";
     public static final String LOSE = "draw.mp3";
     public static final String START = "start.mp3";
-    public static final String MUSIC_MENU1 = "menu_music1.mp3";
-    public static final String MUSIC_MENU2 = "menu_music2.mp3";
-    // public static final String MUSIC_MENU3 = "menu_music3.mp3"; // Disabled - corrupted file
+    public static final String MENU_MUSIC = "menu_music1.mp3";
     public static final String DARK_PRINCE = "darkPrince.mp3";
     public static final String KNIGHT = "knight.mp3";
     public static final String MUSKETEER = "musketeer.mp3";
     public static final String ROYAL_RECRUIT = "royalRecruit.mp3";
     public static final String WITCH = "witch.mp3";
     public static final String BOMB = "bomb.mp3";
-    
-    
-    // Array of menu music files for random selection (menu_music3 excluded due to corruption)
-    private static final String[] MENU_MUSIC_FILES = {MUSIC_MENU1, MUSIC_MENU2};
+    public static final String BOMB_PLANTED = "bombPlanted.mp3";
     
     // Volume control
     private boolean soundEnabled = true;
@@ -43,7 +38,6 @@ public class SoundManager
      */
     private SoundManager()
     {
-        
     }
     
     /**
@@ -166,25 +160,26 @@ public class SoundManager
     
     /**
      * Play menu background music (loops)
-     * Randomly selects one of the three menu music tracks
      */
     public void playMenuMusic()
     {
         try
         {
-            if (menuMusic == null)
+            // Always stop and recreate to avoid corruption issues
+            if (menuMusic != null)
             {
-                // Randomly select one of the menu music files
-                int randomIndex = Greenfoot.getRandomNumber(MENU_MUSIC_FILES.length);
-                String selectedMusic = MENU_MUSIC_FILES[randomIndex];
-                menuMusic = new GreenfootSound(selectedMusic);
+                menuMusic.stop();
+                menuMusic = null;
             }
+            
+            menuMusic = new GreenfootSound(MENU_MUSIC);
             menuMusic.setVolume(getEffectiveMusicVolume());
             menuMusic.playLoop();
         }
         catch (Exception e)
         {
-            // Music file not found, fail silently
+            // Music file not found or corrupted, fail silently
+            menuMusic = null;
         }
     }
     
@@ -195,7 +190,16 @@ public class SoundManager
     {
         if (menuMusic != null)
         {
-            menuMusic.stop();
+            try
+            {
+                menuMusic.stop();
+                menuMusic = null; // Clear reference to prevent reuse
+            }
+            catch (Exception e)
+            {
+                // Ignore errors when stopping
+                menuMusic = null;
+            }
         }
     }
     

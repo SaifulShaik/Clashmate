@@ -33,6 +33,8 @@ public class SpearStrikeEffect extends Effect
         
         lifetime = 20; // Quick strike animation
         createSpearImage();
+        
+        SoundManager.getInstance().play(SoundManager.ROYAL_RECRUIT);
     }
     
     private void createSpearImage()

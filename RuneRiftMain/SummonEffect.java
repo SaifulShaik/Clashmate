@@ -22,6 +22,8 @@ public class SummonEffect extends Effect
         this.centerX = x;
         this.centerY = y;
         lifetime = 30;
+        
+        SoundManager.getInstance().play(SoundManager.WITCH);
     }
     
     @Override

@@ -13,7 +13,6 @@ public class EditorWorld extends MenuWorld
     // Game settings
     private int timeMinutes = 10;       // Default 10 minutes (range 1-30)
     private int elixirMultiplier = 1;   // Default 1x elixir (options: 1, 2, 3)
-    private boolean isWhiteSide = true; // Default white side
     
     // UI Elements
     private Label titleLabel;
@@ -21,8 +20,6 @@ public class EditorWorld extends MenuWorld
     private Label timeValueLabel;
     private Label elixirLabel;
     private Label elixirValueLabel;
-    private Label sideLabel;
-    private Label sideValueLabel;
     
     // Buttons
     private Button timeUpButton;
@@ -30,8 +27,6 @@ public class EditorWorld extends MenuWorld
     private Button elixir1xButton;
     private Button elixir2xButton;
     private Button elixir3xButton;
-    private Button whiteSideButton;
-    private Button blackSideButton;
     private Button backButton;
     private Button startButton;
     
@@ -57,7 +52,6 @@ public class EditorWorld extends MenuWorld
         GameSettings settings = GameSettings.getInstance();
         timeMinutes = settings.getTimeMinutes();
         elixirMultiplier = settings.getElixirMultiplier();
-        isWhiteSide = settings.isWhiteSide();
     }
     
     /**
@@ -90,97 +84,73 @@ public class EditorWorld extends MenuWorld
      */
     private void setupUI()
     {
-        // === VERTICAL OFFSET ===
-        // Change this single value to move the entire UI up (negative) or down (positive)
-        int yOffset = 0;
-        
+        int yOffset = 40;
         // Title
         titleLabel = new Label("GAME SETUP", 42);
         titleLabel.setFillColor(new Color(255, 215, 0)); // Gold
         titleLabel.setLineColor(new Color(180, 140, 0));
-        addObject(titleLabel, 300, 65 + yOffset);
+        addObject(titleLabel, 300, 70 + yOffset);
         
         // Decorative line under title
         addDecorativeLine(300, 90 + yOffset, 300);
         
-        // === TIME SECTION ===
-        createSectionPanel(300, 150 + yOffset, 400, 80, "TIME");
+        // === TIME SECTION (centered vertically) ===
+        createSectionPanel(300, 220, 400, 80, "TIME");
         
         timeLabel = new Label("Game Time:", 24);
         timeLabel.setFillColor(Color.WHITE);
         timeLabel.setLineColor(new Color(100, 100, 100));
-        addObject(timeLabel, 180, 150 + yOffset);
+        addObject(timeLabel, 180, 220);
         
         timeValueLabel = new Label(timeMinutes + " min", 28);
         timeValueLabel.setFillColor(new Color(100, 200, 255));
         timeValueLabel.setLineColor(new Color(50, 100, 150));
-        addObject(timeValueLabel, 300, 150 + yOffset);
+        addObject(timeValueLabel, 300, 220);
         
         timeDownButton = new Button("-", 50, 40, 
             new Color(180, 80, 80), new Color(220, 100, 100), Color.WHITE, 28);
-        addObject(timeDownButton, 390, 150 + yOffset);
+        addObject(timeDownButton, 390, 220);
         
         timeUpButton = new Button("+", 50, 40, 
             new Color(80, 180, 80), new Color(100, 220, 100), Color.WHITE, 28);
-        addObject(timeUpButton, 450, 150 + yOffset);
+        addObject(timeUpButton, 450, 220);
         
-        // === ELIXIR MULTIPLIER SECTION ===
-        createSectionPanel(300, 265 + yOffset, 400, 120, "ELIXIR");
+        // === ELIXIR MULTIPLIER SECTION (centered vertically) ===
+        createSectionPanel(300, 350, 400, 120, "ELIXIR");
         
         elixirLabel = new Label("Elixir Multiplier: ", 24);
         elixirLabel.setFillColor(Color.WHITE);
         elixirLabel.setLineColor(new Color(100, 100, 100));
-        addObject(elixirLabel, 280, 230 + yOffset);
+        addObject(elixirLabel, 280, 315);
         
         elixirValueLabel = new Label(elixirMultiplier + "x", 28);
         elixirValueLabel.setFillColor(new Color(200, 100, 255));
         elixirValueLabel.setLineColor(new Color(100, 50, 150));
-        addObject(elixirValueLabel, 380, 230 + yOffset);
+        addObject(elixirValueLabel, 380, 315);
         
         // Three mutually exclusive multiplier buttons
         elixir1xButton = new Button("1x", 70, 40, 
             getMultiplierButtonColor(1, false), getMultiplierButtonColor(1, true), Color.WHITE, 22);
-        addObject(elixir1xButton, 220, 290 + yOffset);
+        addObject(elixir1xButton, 220, 375);
         
         elixir2xButton = new Button("2x", 70, 40, 
             getMultiplierButtonColor(2, false), getMultiplierButtonColor(2, true), Color.WHITE, 22);
-        addObject(elixir2xButton, 300, 290 + yOffset);
+        addObject(elixir2xButton, 300, 375);
         
         elixir3xButton = new Button("3x", 70, 40, 
             getMultiplierButtonColor(3, false), getMultiplierButtonColor(3, true), Color.WHITE, 22);
-        addObject(elixir3xButton, 380, 290 + yOffset);
+        addObject(elixir3xButton, 380, 375);
         
         updateElixirButtonHighlights();
         
-        // === SIDE SELECTION SECTION ===
-        createSectionPanel(300, 420 + yOffset, 400, 160, "CHOOSE YOUR SIDE");
-        
-        sideLabel = new Label("Playing as:", 24);
-        sideLabel.setFillColor(Color.WHITE);
-        sideLabel.setLineColor(new Color(100, 100, 100));
-        addObject(sideLabel, 300, 370 + yOffset);
-        
-        whiteSideButton = new Button("WHITE", 140, 50, 
-            new Color(240, 240, 240), new Color(255, 255, 255), Color.BLACK, 22);
-        addObject(whiteSideButton, 200, 420 + yOffset);
-        
-        blackSideButton = new Button("BLACK", 140, 50, 
-            new Color(50, 50, 50), new Color(80, 80, 80), Color.WHITE, 22);
-        addObject(blackSideButton, 400, 420 + yOffset);
-        
-        sideValueLabel = new Label("► WHITE ◄", 26);
-        sideValueLabel.setFillColor(new Color(255, 255, 200));
-        sideValueLabel.setLineColor(new Color(150, 150, 100));
-        addObject(sideValueLabel, 300, 470 + yOffset);
-        
-        // === BACK AND START BUTTONS ===
+        // === BACK AND START BUTTONS (at bottom) ===
         backButton = new Button("← BACK", 140, 60,
             new Color(70, 70, 90), new Color(100, 100, 130), Color.WHITE, 24);
-        addObject(backButton, 170, 540 + yOffset);
+        addObject(backButton, 170, 540-yOffset);
         
         startButton = new Button("START GAME", 200, 60, 
             new Color(50, 150, 50), new Color(70, 200, 70), Color.WHITE, 26);
-        addObject(startButton, 380, 540 + yOffset);
+        addObject(startButton, 380, 540-yOffset);
     }
     
     /**
@@ -281,18 +251,6 @@ public class EditorWorld extends MenuWorld
             updateElixirDisplay();
             saveSettings(); // Auto-save on change
         }
-        else if (whiteSideButton.wasClicked())
-        {
-            isWhiteSide = true;
-            updateSideDisplay();
-            saveSettings(); // Auto-save on change
-        }
-        else if (blackSideButton.wasClicked())
-        {
-            isWhiteSide = false;
-            updateSideDisplay();
-            saveSettings(); // Auto-save on change
-        }
         else if (backButton.wasClicked())
         {
             goToLandingPage();
@@ -364,23 +322,6 @@ public class EditorWorld extends MenuWorld
     }
     
     /**
-     * Update the side selection display
-     */
-    private void updateSideDisplay()
-    {
-        if (isWhiteSide)
-        {
-            sideValueLabel.setValue("► WHITE ◄");
-            sideValueLabel.setFillColor(new Color(255, 255, 200));
-        }
-        else
-        {
-            sideValueLabel.setValue("► BLACK ◄");
-            sideValueLabel.setFillColor(new Color(150, 150, 150));
-        }
-    }
-    
-    /**
      * Start the game with selected settings
      */
     private void startGame()
@@ -403,12 +344,10 @@ public class EditorWorld extends MenuWorld
         GameSettings settings = GameSettings.getInstance();
         settings.setElixirMultiplier(elixirMultiplier);
         settings.setTimeMinutes(timeMinutes);
-        settings.setWhiteSide(isWhiteSide);
         settings.save();
     }
     
     // Getter methods for settings
     public int getTimeMinutes() { return timeMinutes; }
     public int getElixirMultiplier() { return elixirMultiplier; }
-    public boolean isWhiteSide() { return isWhiteSide; }
 }

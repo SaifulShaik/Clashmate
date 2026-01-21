@@ -27,6 +27,8 @@ public class SnipeEffect extends Effect
         this.endX = endX;
         this.endY = endY;
         lifetime = 25; 
+        
+        SoundManager.getInstance().play(SoundManager.MUSKETEER);
     }
     
     @Override
