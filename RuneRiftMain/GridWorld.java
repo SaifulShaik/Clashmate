@@ -60,6 +60,12 @@ public class GridWorld extends World
     private FadeOverlay fadeOverlay;
     private boolean gameStarted = false;
     
+    // Game stats tracking
+    private List<Piece.PieceType> whiteCapturedPieces; // Pieces white captured (black pieces)
+    private List<Piece.PieceType> blackCapturedPieces; // Pieces black captured (white pieces)
+    private int turnCount = 0;
+    private long gameStartTime;
+    
     /**
      * Constructor for objects of class MyWorld.
      * Loads settings from GameSettings configuration.
@@ -111,6 +117,8 @@ public class GridWorld extends World
         bombs = new ArrayList<>();
         whitePieces = new ArrayList<>();
         blackPieces = new ArrayList<>();
+        whiteCapturedPieces = new ArrayList<>();
+        blackCapturedPieces = new ArrayList<>();
         
         // white pieces
         Piece wDarkPrince1 = new Piece(Piece.PieceType.DARK_PRINCE, blockGrid[7][0], true);
@@ -205,6 +213,7 @@ public class GridWorld extends World
         if (!gameStarted && fadeOverlay != null && fadeOverlay.isFadeComplete())
         {
             gameStarted = true;
+            gameStartTime = System.currentTimeMillis();
             whiteTimer.setActive(true); // White goes first
         }
     }
@@ -246,29 +255,82 @@ public class GridWorld extends World
     }
     
     /**
-     * remove a piece from the appropriate piece list
+     * remove a piece from the appropriate piece list and track capture
      * @param piece the piece to remove
+     * @param capturedBy the player who captured it ("WHITE" or "BLACK"), or null if not a capture
      */
-    public void removePieceFromList(Piece piece) {
+    public void removePieceFromList(Piece piece, String capturedBy) {
         if (piece.checkIsWhite()) {
             whitePieces.remove(piece);
+            // Black captured a white piece
+            if (capturedBy != null && capturedBy.equals("BLACK")) {
+                blackCapturedPieces.add(piece.getType());
+            }
         } 
         else {
             blackPieces.remove(piece);
+            // White captured a black piece
+            if (capturedBy != null && capturedBy.equals("WHITE")) {
+                whiteCapturedPieces.add(piece.getType());
+            }
         }
-        //System.out.println("Piece removed. White: " + whitePieces.size() + ", Black: " + blackPieces.size());
         checkIfGameEnd();
     }
     
     /**
-     * end the game with a message
-     * @param message the message to display
+     * remove a piece from the appropriate piece list (legacy method)
+     * @param piece the piece to remove
+     */
+    public void removePieceFromList(Piece piece) {
+        // Determine who captured based on current turn
+        String currentPlayer = turnManager.getCurrentPlayer();
+        removePieceFromList(piece, currentPlayer);
+    }
+    
+    /**
+     * end the game with a message and show end game screen
+     * @param message the message/reason for game end
      */
     private void endGame(String message) {
         System.out.println("Game Over! " + message);
         whiteTimer.setActive(false);
         blackTimer.setActive(false);
-        Greenfoot.stop();
+        
+        // Calculate game stats
+        int whiteTimeRemaining = whiteTimer.getTimeLeft();
+        int blackTimeRemaining = blackTimer.getTimeLeft();
+        int totalGameTime = (int)((System.currentTimeMillis() - gameStartTime) / 1000);
+        
+        // Determine winner
+        String winner;
+        if (message.contains("Draw")) {
+            winner = "DRAW";
+        } else if (message.contains("WHITE")) {
+            winner = "WHITE";
+        } else {
+            winner = "BLACK";
+        }
+        
+        // Transition to end game screen
+        Greenfoot.setWorld(new EndGameWorld(
+            winner,
+            message,
+            whiteTimeRemaining,
+            blackTimeRemaining,
+            totalGameTime,
+            turnCount,
+            whiteCapturedPieces,
+            blackCapturedPieces
+        ));
+    }
+    
+    /**
+     * End the game due to timeout
+     * @param loser The player who ran out of time
+     */
+    public void endGameByTimeout(String loser) {
+        String winner = loser.equals("WHITE") ? "BLACK" : "WHITE";
+        endGame(winner + " wins by timeout!");
     }
     
     /**
@@ -279,6 +341,9 @@ public class GridWorld extends World
     public void endTurn(){
         // Don't allow ending turn if game hasn't started
         if (!gameStarted) return;
+        
+        // Increment turn count
+        turnCount++;
         
         if (enPassantVulnerablePawn != null) {
             String currentPlayer = turnManager.getCurrentPlayer();

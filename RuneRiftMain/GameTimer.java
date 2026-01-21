@@ -105,21 +105,32 @@ public class GameTimer extends Actor
         return String.format("%d:%02d", minutes, secs);
     }
     
+    /**
+     * Get the time remaining on this timer
+     * @return time left in seconds
+     */
+    public int getTimeLeft()
+    {
+        return timeLeft;
+    }
+    
+    /**
+     * Get the player this timer belongs to
+     * @return "WHITE" or "BLACK"
+     */
+    public String getPlayer()
+    {
+        return player;
+    }
+    
     private void checkTimeOut()
     {
         SoundManager.getInstance().playLose();
-        Greenfoot.stop();
         
-        // Show game over message
-        GreenfootImage img = new GreenfootImage(250, 60);
-        img.setColor(Color.RED);
-        img.fillRect(0, 0, 250, 60);
-        img.setColor(Color.WHITE);
-        img.setFont(new Font("Arial", true, false, 20));
-        
-        String winner = player.equals("WHITE") ? "BLACK" : "WHITE";
-        img.drawString(winner + " WINS!", 50, 25);
-        img.drawString("Time Out!", 70, 45);
-        setImage(img);
+        // Notify GridWorld to handle game end
+        GridWorld world = (GridWorld) getWorld();
+        if (world != null) {
+            world.endGameByTimeout(player);
+        }
     }
 }
