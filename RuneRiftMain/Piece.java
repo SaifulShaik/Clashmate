@@ -149,12 +149,6 @@ public class Piece extends Actor
             abilityState = 0;
         }
         
-        // updates location and 
-        if (type == PieceType.DARK_PRINCE && abilityState == 1 && getWorld ()!= null) {
-            // We spawn it at the TARGET location because that is where we land
-            getWorld().addObject(new ChargeEffect(target.getX(), target.getY()), target.getX(), target.getY());
-        }
-        
         SoundManager.getInstance().playMove();
         setLocation(target.getX(), target.getY());
 
@@ -188,20 +182,28 @@ public class Piece extends Actor
         int y = currentBlock.getBoardY();
         
         Block block1 = gw.getBlock(x+1, y);
-        if (block1 != null) {
-            block1.removePiece(true);
+        if (block1 != null && block1.currentPiece() != null) {
+            if (block1.currentPiece().checkIsWhite() != isWhite) {
+                block1.removePiece(true);
+            }
         }
         Block block2 = gw.getBlock(x-1, y);
-        if (block2 != null) {
-            block2.removePiece(true);
+        if (block2 != null && block2.currentPiece() != null) {
+            if (block2.currentPiece().checkIsWhite() != isWhite) {
+                block2.removePiece(true);
+            }
         }
         Block block3 = gw.getBlock(x, y+1);
-        if (block3 != null) {
-            block3.removePiece(true);
+        if (block3 != null && block3.currentPiece() != null) {
+            if (block3.currentPiece().checkIsWhite() != isWhite) {
+                block3.removePiece(true);
+            }
         }
         Block block4 = gw.getBlock(x, y-1);
-        if (block4 != null) {
-            block4.removePiece(true);
+        if (block4 != null && block4.currentPiece() != null) {
+            if (block4.currentPiece().checkIsWhite() != isWhite) {
+                block4.removePiece(true);
+            }
         }
 
         // reset ability state
