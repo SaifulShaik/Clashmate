@@ -26,6 +26,9 @@ public class KnightSlashEffect extends Effect
         this.centerY = y;
         this.isWhite = isWhite;
         lifetime = 25;
+        
+        // Play knight sound once when effect is created
+        SoundManager.getInstance().play(SoundManager.KNIGHT);
     }
     
     @Override
