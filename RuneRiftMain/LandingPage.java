@@ -1,9 +1,8 @@
 import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
 
 /**
- * Landing page for RuneRift game.
- * Features animated title and navigation buttons.
- * Extends MenuWorld for common menu functionality.
+ * Landing page for ClashMate game.
+ * Play, info, settings, and credits button added.
  * 
  * @author Saiful Shaik
  * @version
@@ -28,7 +27,7 @@ public class LandingPage extends MenuWorld
     
     public LandingPage()
     {    
-        super(); // Uses MenuWorld's 600x600 setup
+        super();
         titleOpacity = 0;
         titleY = 250;
         targetTitleY = 150;
@@ -40,7 +39,7 @@ public class LandingPage extends MenuWorld
     
     public void act()
     {
-        // Start music on first act (when Greenfoot Run is pressed)
+        // Start music on first act
         startMusicIfNeeded();
         
         frameCount++;
@@ -55,7 +54,6 @@ public class LandingPage extends MenuWorld
     {
         if (!titleAnimationComplete)
         {
-            // Fade in animation
             if (titleOpacity < 255)
             {
                 titleOpacity += 5;
@@ -65,7 +63,6 @@ public class LandingPage extends MenuWorld
                 subtitleLabel.setFillColor(new Color(225, 225, 225, titleOpacity));
             }
             
-            // Move up animation
             if (titleY > targetTitleY)
             {
                 titleY -= 2;
@@ -73,7 +70,6 @@ public class LandingPage extends MenuWorld
                 subtitleLabel.setLocation(300, titleY + 70);
             }
             
-            // Check if animation is complete
             if (titleOpacity >= 255 && titleY <= targetTitleY)
             {
                 titleAnimationComplete = true;
@@ -124,9 +120,7 @@ public class LandingPage extends MenuWorld
      */
     private void showCredits()
     {
-        // Could navigate to a credits world or show a dialog
         Greenfoot.playSound("sounds/click.mp3");
-        // For now, just play a sound
     }
     
     /**
@@ -162,7 +156,7 @@ public class LandingPage extends MenuWorld
                                    
         addObject(infoButton, 300, 410);
         
-        // Create settings button (replacing the old credits button position)
+        // Create settings button
         settingsButton = new Button("SETTINGS", 220, 65,
                                    new Color(90, 90, 120),
                                    new Color(120, 120, 160),
@@ -186,9 +180,6 @@ public class LandingPage extends MenuWorld
         
         // Load and scale the image smaller
         GreenfootImage img = new GreenfootImage("Background.png");
-        
-        
-        // Center the image on the background
         int x = 0;
         int y = 0;
         bg.drawImage(img, x, y);

@@ -6,13 +6,13 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  * Extends MenuWorld for common menu functionality.
  * 
  * @author Saiful Shaik
- * @version 1.0
+ * @version
  */
 public class EditorWorld extends MenuWorld
 {
     // Game settings
-    private int timeMinutes = 10;       // Default 10 minutes (range 1-30)
-    private int elixirMultiplier = 1;   // Default 1x elixir (options: 1, 2, 3)
+    private int timeMinutes = 10;
+    private int elixirMultiplier = 1;
     
     // UI Elements
     private Label titleLabel;
@@ -38,7 +38,7 @@ public class EditorWorld extends MenuWorld
      */
     public EditorWorld()
     {    
-        super(); // Uses MenuWorld's standard dimensions
+        super();
         loadSavedSettings();
         createBackground();
         setupUI();
@@ -61,7 +61,7 @@ public class EditorWorld extends MenuWorld
     {
         backgroundImage = new GreenfootImage(600, 600);
         
-        // Gradient background (dark blue to darker blue)
+        // Gradient background
         for (int y = 0; y < 600; y++)
         {
             int r = 20 + (y * 15 / 600);
@@ -225,31 +225,31 @@ public class EditorWorld extends MenuWorld
         {
             timeMinutes = Math.min(timeMinutes + 1, 30); // Max 30 minutes
             updateTimeDisplay();
-            saveSettings(); // Auto-save on change
+            saveSettings();
         }
         else if (timeDownButton.wasClicked())
         {
             timeMinutes = Math.max(timeMinutes - 1, 1); // Min 1 minute
             updateTimeDisplay();
-            saveSettings(); // Auto-save on change
+            saveSettings();
         }
         else if (elixir1xButton.wasClicked())
         {
             elixirMultiplier = 1;
             updateElixirDisplay();
-            saveSettings(); // Auto-save on change
+            saveSettings();
         }
         else if (elixir2xButton.wasClicked())
         {
             elixirMultiplier = 2;
             updateElixirDisplay();
-            saveSettings(); // Auto-save on change
+            saveSettings();
         }
         else if (elixir3xButton.wasClicked())
         {
             elixirMultiplier = 3;
             updateElixirDisplay();
-            saveSettings(); // Auto-save on change
+            saveSettings();
         }
         else if (backButton.wasClicked())
         {
@@ -285,12 +285,12 @@ public class EditorWorld extends MenuWorld
     {
         if (multiplier == elixirMultiplier)
         {
-            // Selected - bright purple
+            // Selected: bright purple
             return isHover ? new Color(180, 80, 255) : new Color(140, 60, 200);
         }
         else
         {
-            // Not selected - gray
+            // Not selected: gray
             return isHover ? new Color(100, 100, 100) : new Color(70, 70, 70);
         }
     }

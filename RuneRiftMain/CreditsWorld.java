@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Extends MenuWorld for common menu functionality.
  * 
  * @author Saiful Shaik
- * @version 
+ * @version
  */
 public class CreditsWorld extends MenuWorld
 {
@@ -22,12 +22,12 @@ public class CreditsWorld extends MenuWorld
     private int scrollHintAlpha;
     private boolean scrollHintFadingOut;
     
-    // Viewport bounds (the visible area for credits)
-    private static final int VIEWPORT_TOP = 110;      // Just below title
-    private static final int VIEWPORT_BOTTOM = 500;   // Just above back button
+    // Viewport bounds
+    private static final int VIEWPORT_TOP = 110;
+    private static final int VIEWPORT_BOTTOM = 500;
     private static final int VIEWPORT_HEIGHT = VIEWPORT_BOTTOM - VIEWPORT_TOP;
     
-    // Scrollbar variables - sized to match viewport
+    // Scrollbar variables
     private int scrollbarX = 565;
     private int scrollbarTrackY = VIEWPORT_TOP;
     private int scrollbarTrackHeight = VIEWPORT_HEIGHT;
@@ -48,8 +48,8 @@ public class CreditsWorld extends MenuWorld
         super(); // Uses MenuWorld's standard dimensions
         fadeAlpha = 0;
         scrollY = 0;
-        minScrollY = -200; // How far down you can scroll
-        maxScrollY = 0;    // Top position
+        minScrollY = -200;
+        maxScrollY = 0;
         creditLabels = new ArrayList<Label>();
         originalYPositions = new ArrayList<Integer>();
         scrollHintAlpha = 255;
@@ -109,16 +109,14 @@ public class CreditsWorld extends MenuWorld
     {
         MouseInfo mouse = Greenfoot.getMouseInfo();
         
-        // Mouse drag scrolling - click and drag to scroll
+        // Mouse drag scrolling
         if (mouse != null)
         {
             int mouseY = mouse.getY();
             
-            // Start dragging when mouse is pressed in viewport area
             if (Greenfoot.mousePressed(null) && !isDraggingScrollbar)
             {
                 int mouseX = mouse.getX();
-                // Only start drag if within content area (not on scrollbar)
                 if (mouseX < scrollbarX - 20 && mouseY >= VIEWPORT_TOP && mouseY <= VIEWPORT_BOTTOM)
                 {
                     isDraggingContent = true;
@@ -126,7 +124,6 @@ public class CreditsWorld extends MenuWorld
                 }
             }
             
-            // While dragging, scroll based on mouse movement
             if (isDraggingContent && Greenfoot.mouseDragged(null))
             {
                 int deltaY = mouseY - lastMouseY;
@@ -134,8 +131,7 @@ public class CreditsWorld extends MenuWorld
                 lastMouseY = mouseY;
                 scrollHintFadingOut = true;
             }
-            
-            // Stop dragging when mouse is released
+
             if (Greenfoot.mouseClicked(null) || Greenfoot.mouseDragEnded(null))
             {
                 isDraggingContent = false;
@@ -178,7 +174,6 @@ public class CreditsWorld extends MenuWorld
             boolean overTrack = mouseX >= scrollbarX - 6 && mouseX <= scrollbarX + 6 &&
                                mouseY >= scrollbarTrackY && mouseY <= scrollbarTrackY + scrollbarTrackHeight;
             
-            // Start dragging
             if (Greenfoot.mousePressed(null) && overThumb)
             {
                 isDraggingScrollbar = true;
@@ -186,10 +181,8 @@ public class CreditsWorld extends MenuWorld
                 scrollHintFadingOut = true;
             }
             
-            // Click on track to jump
             if (Greenfoot.mouseClicked(null) && overTrack && !overThumb)
             {
-                // Calculate scroll position from click
                 int targetThumbY = mouseY - scrollbarThumbHeight / 2;
                 targetThumbY = Math.max(scrollbarTrackY, Math.min(scrollbarTrackY + scrollbarTrackHeight - scrollbarThumbHeight, targetThumbY));
                 
@@ -199,20 +192,17 @@ public class CreditsWorld extends MenuWorld
                 scrollHintFadingOut = true;
             }
             
-            // While dragging
             if (isDraggingScrollbar)
             {
                 int newThumbY = mouseY - dragOffsetY;
                 newThumbY = Math.max(scrollbarTrackY, Math.min(scrollbarTrackY + scrollbarTrackHeight - scrollbarThumbHeight, newThumbY));
                 
-                // Convert thumb position to scroll position
                 float ratio = (float)(newThumbY - scrollbarTrackY) / (scrollbarTrackHeight - scrollbarThumbHeight);
                 scrollY = (int)(maxScrollY - ratio * (maxScrollY - minScrollY));
                 updateLabelPositions();
             }
         }
         
-        // Stop dragging when mouse released
         if (Greenfoot.mouseClicked(null) || Greenfoot.mouseDragEnded(null))
         {
             isDraggingScrollbar = false;
@@ -253,17 +243,14 @@ public class CreditsWorld extends MenuWorld
             int y = label.getY();
             int labelHeight = label.getImage().getHeight();
             
-            // Check if label is within viewport bounds (with some margin for the label height)
             boolean isVisible = (y + labelHeight / 2 > VIEWPORT_TOP) && (y - labelHeight / 2 < VIEWPORT_BOTTOM);
             
             if (isVisible)
             {
-                // Restore original transparency
                 label.getImage().setTransparency(255);
             }
             else
             {
-                // Hide the label by making it fully transparent
                 label.getImage().setTransparency(0);
             }
         }
@@ -350,14 +337,14 @@ public class CreditsWorld extends MenuWorld
     {
         updateBackground();
         
-        // Title (fixed position, not scrollable)
+        // Title
         Label titleLabel = new Label("CREDITS", 48);
         titleLabel.setLineColor(new Color(0, 0, 0, 0));
         titleLabel.setFillColor(Color.WHITE);
         addObject(titleLabel, 300, 55);
         
-        // Credit lines with proper positioning - start inside viewport
-        int y = VIEWPORT_TOP + 30;  // Start a bit below viewport top
+        // Credit lines
+        int y = VIEWPORT_TOP + 30;
         
         // Game title
         addScrollableCreditLine("CLASHMATE", 32, new Color(100, 180, 255), y);
@@ -413,18 +400,18 @@ public class CreditsWorld extends MenuWorld
         
         // Calculate scroll range based on content
         // Content that extends below viewport bottom needs scrolling
-        int contentHeight = y - (VIEWPORT_TOP + 30);  // Total height of all credits
-        int scrollableAmount = contentHeight - VIEWPORT_HEIGHT + 60;  // Extra padding
+        int contentHeight = y - (VIEWPORT_TOP + 30);
+        int scrollableAmount = contentHeight - VIEWPORT_HEIGHT + 60;
         minScrollY = -Math.max(0, scrollableAmount);
         maxScrollY = 0;
         
-        // Scroll hint at bottom (fixed position, outside viewport)
+        // Scroll hint at bottom
         scrollHint = new Label("↑ ↓  Scroll to see more", 14);
         scrollHint.setLineColor(new Color(0, 0, 0, 0));
         scrollHint.setFillColor(new Color(150, 150, 170, scrollHintAlpha));
         addObject(scrollHint, 300, 520);
         
-        // Back button (fixed position)
+        // Back button
         backButton = new Button("← BACK", 150, 50,
                                new Color(70, 70, 90),
                                new Color(100, 100, 130),

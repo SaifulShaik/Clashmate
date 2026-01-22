@@ -2,11 +2,11 @@ import greenfoot.*;
 import java.util.List;
 
 /**
- * CapturedPiecesPopup - A popup window showing captured pieces.
+ * A popup window showing captured pieces.
  * Can be closed by clicking anywhere or the close button.
  * 
  * @author Saiful Shaik
- * @version 1.0
+ * @version
  */
 public class CapturedPiecesPopup extends Actor
 {

@@ -1,11 +1,10 @@
 import greenfoot.*;
 
 /**
- * FadeOverlay - Creates a fade-in effect for the game board.
+ * Creates a fade-in effect for the game board.
  * Shows a loading animation, then fades out to reveal the board.
  * 
  * @author Saiful Shaik
- * @version 1.0
  */
 public class FadeOverlay extends Actor
 {

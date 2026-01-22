@@ -9,8 +9,10 @@ import java.util.ArrayList;
  * 
  * all images are from clash royale
  * 
- * @author Joe Zhuo 
+ * @author Joe Zhuo
  * @version 1/13/2026
+ * 
+ * Modified by Saiful Shaik
  */
 public class Piece extends Actor
 {
@@ -149,7 +151,11 @@ public class Piece extends Actor
             abilityState = 0;
         }
         
-        SoundManager.getInstance().playMove();
+        // Only play move sound if game has started (not during initial setup)
+        if (gw != null && gw.isGameStarted()) {
+            SoundManager.getInstance().playMove();
+        }
+        
         setLocation(target.getX(), target.getY());
 
         // updates current block

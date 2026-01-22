@@ -5,7 +5,6 @@ import greenfoot.*;
  * Allows users to click and drag to adjust volume levels.
  * 
  * @author Saiful Shaik
- * @version 
  */
 public class VolumeSlider extends Actor
 {

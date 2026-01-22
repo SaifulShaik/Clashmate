@@ -16,7 +16,7 @@ public class InfoWorld extends MenuWorld
      */
     public InfoWorld()
     {
-        super(800, 600); // Custom width for piece display
+        super(800, 600);
         
         // Title
         getBackground().setColor(Color.WHITE);
@@ -48,14 +48,10 @@ public class InfoWorld extends MenuWorld
         try
         {
             GreenfootImage img = new GreenfootImage("Background.png");
-            // Scale to fit width while maintaining aspect ratio, or tile/center
             img.scale(getWidth(), getHeight());
             bg.drawImage(img, 0, 0);
         }
-        catch (Exception e)
-        {
-            // Background image not found, use solid color
-        }
+        catch (Exception e) {}
         
         setBackground(bg);
     }
@@ -78,12 +74,9 @@ public class InfoWorld extends MenuWorld
     private void setupPieceImages()
     {
         // Row 1 - Top pieces
-        
         addObject(new PieceImage("ROYAL_RECRUITS", "BRoyalRecruits.png"), 270, 205);
         addObject(new PieceImage("MUSKETEER", "BMusketeer.png"), 410, 205);
         addObject(new PieceImage("KNIGHT", "BKnight.png"), 550, 205);
-        
-        
         
         // Row 2 - Bottom pieces 
         addObject(new PieceImage("DARK_PRINCE", "BDarkPrince.png"), 200, 405);

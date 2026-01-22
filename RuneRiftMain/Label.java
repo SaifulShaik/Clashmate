@@ -8,7 +8,6 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  * displays.  
  *
  * @author Saiful Shaik
- * @version 1.1
  */
 public class Label extends Actor
 {

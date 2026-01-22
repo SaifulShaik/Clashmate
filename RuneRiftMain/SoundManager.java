@@ -1,11 +1,10 @@
 import greenfoot.*;
 
 /**
- * SoundManager - Centralized sound management for RuneRift.
+ * Centralized sound management for RuneRift.
  * Handles all game sounds including UI clicks, piece movements, and game events.
  * 
  * @author Saiful Shaik
- * @version
  */
 public class SoundManager  
 {
@@ -66,10 +65,7 @@ public class SoundManager
                 sound.setVolume(getEffectiveSfxVolume());
                 sound.play();
             }
-            catch (Exception e)
-            {
-                // Sound file not found, fail silently
-            }
+            catch (Exception e) {}
         }
     }
     
@@ -104,8 +100,7 @@ public class SoundManager
      */
     public void playMove()
     {
-        //if() {}
-        //play(MOVE);
+        play(MOVE);
     }
     
     /**

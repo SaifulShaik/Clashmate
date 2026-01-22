@@ -3,16 +3,16 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * EndGameWorld - Displays the end game screen with stats for both players.
- * Shows winner, time taken, pieces captured with scrollable content.
+ * Displays the end game screen with stats for both players.
+ * Shows winner, time taken, pieces captured with scrollable content, also includes a Draw page
  * 
  * @author Saiful Shaik
- * @version 1.1
+ * @version
  */
 public class EndGameWorld extends MenuWorld
 {
     // Game result data
-    private String winner; // "WHITE", "BLACK", or "DRAW"
+    private String winner;
     private String endReason;
     private int whiteTimeRemaining;
     private int blackTimeRemaining;
@@ -43,7 +43,7 @@ public class EndGameWorld extends MenuWorld
     private boolean isDraggingContent = false;
     private int lastMouseY = 0;
     
-    // Navigation buttons (fixed, not scrolling)
+    // Navigation buttons
     private Button playAgainButton;
     private Button mainMenuButton;
     
@@ -143,7 +143,7 @@ public class EndGameWorld extends MenuWorld
     
     private void setupScrollableContent()
     {
-        int centerX = 295; // Center of viewport (25 + 540/2)
+        int centerX = 295;
         int currentY = VIEWPORT_TOP + 30;
         int spacing = 40;
         

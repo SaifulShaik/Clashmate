@@ -34,15 +34,15 @@ public class SettingsWorld extends MenuWorld
     
     public SettingsWorld()
     {
-        super(); // Uses MenuWorld's standard dimensions
+        super();
         
         // Initialize animation variables
         fadeInAlpha = 0;
         slideOffset = 100;
         animatingIn = true;
         frameCount = 0;
-        panelY = 700; // Start below screen
-        targetPanelY = 300; // Target center position
+        panelY = 700;
+        targetPanelY = 300;
         
         prepare();
     }

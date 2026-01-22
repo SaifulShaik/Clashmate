@@ -5,15 +5,14 @@ import java.io.*;
  * Handles saving/loading settings to/from a file.
  * 
  * @author Saiful Shaik
- * @version
  */
 public class GameSettings
 {
     private static final String SETTINGS_FILE = "game_settings.txt";
     
     // Settings with defaults
-    private int elixirMultiplier = 1;  // 1, 2, or 3
-    private int timeMinutes = 10;       // 1-30 minutes
+    private int elixirMultiplier = 1;
+    private int timeMinutes = 10;
     private boolean isWhiteSide = true;
     
     // Volume settings (0-100)
@@ -29,7 +28,7 @@ public class GameSettings
      */
     private GameSettings()
     {
-        load(); // Load settings on creation
+        load();
     }
     
     /**
