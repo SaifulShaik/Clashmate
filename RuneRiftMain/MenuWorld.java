@@ -1,12 +1,11 @@
 import greenfoot.*;
 
 /**
- * Base class for all menu worlds in RuneRift.
- * Provides common functionality like background setup, music handling,
- * and standard dimensions.
+ * Base class for all menu worlds in ClashMate.
+ * Provides common functionality like background setup, music handling,and standard dimensions.
  * 
  * @author Saiful Shaik
- * @version 1.0
+ * @version
  */
 public abstract class MenuWorld extends World
 {
@@ -18,7 +17,7 @@ public abstract class MenuWorld extends World
     private boolean musicStarted = false;
     
     /**
-     * Create a MenuWorld with standard dimensions (600x600)
+     * Create a MenuWorld
      */
     public MenuWorld()
     {
@@ -26,9 +25,6 @@ public abstract class MenuWorld extends World
         setupBackground();
     }
     
-    /**
-     * Create a MenuWorld with custom dimensions
-     */
     public MenuWorld(int width, int height)
     {
         super(width, height, 1);
